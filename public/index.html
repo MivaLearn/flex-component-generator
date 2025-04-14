@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Miva Flex Component Generator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <h1>Miva Flex Component Generator</h1>
+
+  <div id="main-container" style="display: flex; gap: 20px; align-items: flex-start;">
+    <!-- Form Container -->
+    <div id="form-container" style="flex: 1;">
+      <form action="/generate" method="POST">
+        <!-- This section will be filled in by renderer.js -->
+        <div id="form-content">
+          <div id="properties-container"></div>
+          <button id="add-property" type="button">Add Property</button>
+        </div>
+
+        <button type="submit">Generate Component Files</button>
+      </form>
+    </div>
+
+    <!-- JSON Preview Container -->
+    <div id="preview-container" style="flex: 1; background: #f9f9f9; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
+      <h2>JSON Preview</h2>
+      <pre id="json-preview" style="white-space: pre-wrap; word-wrap: break-word; background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 5px; max-height: 500px; overflow-y: auto;"></pre>
+    </div>
+  </div>
+
+  <!-- Load JavaScript modules -->
+  <script type="module" src="main.js"></script>
+</body>
+</html>

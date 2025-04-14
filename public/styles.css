@@ -1,0 +1,299 @@
+/* styles.css */
+
+html { box-sizing: border-box; }
+*, *:before, *:after { box-sizing: inherit; }
+
+body {
+  font-family: sans-serif;
+  padding: 20px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+h1, h2 { color: #333; margin-top: 0; margin-bottom: 1em; }
+h1 { text-align: center; margin-bottom: 1.5em; }
+
+/* --- Main Layout --- */
+#main-container { display: flex; gap: 30px; align-items: flex-start; }
+#form-container { flex: 2; min-width: 450px; }
+#preview-container {
+    flex: 1; min-width: 350px; background: #f9f9f9; padding: 20px;
+    border: 1px solid #ddd; border-radius: 5px; position: sticky; top: 20px;
+    max-height: calc(100vh - 40px); overflow-y: auto;
+}
+
+/* --- General Form Element Styling --- */
+label {
+  font-weight: bold; color: #333;
+  /* Alignment handled by grid context */
+  padding-top: 8px; /* Align with input padding */
+  margin-bottom: 0;
+  align-self: baseline;
+  overflow-wrap: break-word; word-wrap: break-word; hyphens: auto; /* Prevent long labels breaking layout */
+}
+
+/* REMOVE small tag styling */
+/* label > small { ... } */
+
+input[type="text"], input[type="number"], textarea, select {
+  width: 100%; padding: 8px; margin: 0;
+  border: 1px solid #ccc; border-radius: 4px; font-size: 1em; box-sizing: border-box;
+}
+textarea { resize: vertical; min-height: 70px; }
+button {
+  margin-top: 10px; padding: 10px 15px; font-size: 1em; background-color: #007bff;
+  color: white; border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.2s ease;
+}
+button:hover { background-color: #0056b3; }
+button[type="submit"] { padding: 12px 25px; font-size: 1.1em; margin-top: 25px; display: block; margin-left: auto; margin-right: auto; }
+.remove-property, .remove-field, .remove-option, .remove-attribute {
+    padding: 5px 10px; font-size: 0.85em; background-color: #dc3545; color: white;
+    border: none; border-radius: 4px; cursor: pointer; height: fit-content; margin-left: auto;
+}
+.remove-property:hover, .remove-field:hover, .remove-option:hover, .remove-attribute:hover { background-color: #c82333; }
+
+/* --- Accordion Styles --- */
+.accordion-item { margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px; overflow: hidden; background-color: #fff; }
+.accordion-header {
+  background-color: #f1f1f1; color: #333; padding: 12px 15px; font-size: 1.1em;
+  font-weight: bold; cursor: pointer; border: none; border-bottom: 1px solid #ddd;
+  text-align: left; width: 100%; margin-top: 0;
+}
+.accordion-header:hover { background-color: #e0e0e0; }
+.accordion-item.active > .accordion-header { background-color: #007bff; color: white; border-bottom-color: #0056b3; }
+
+.accordion-body { display: none; padding: 20px; background-color: #fff; }
+.accordion-item.active > .accordion-body {
+  display: grid;
+  grid-template-columns: minmax(130px, auto) 1fr; /* Label column & Input column */
+  gap: 10px 15px; /* Row gap, Column gap */
+  align-items: baseline; /* Align label/input text baseline */
+}
+
+/* Properties Accordion Body - Single Column */
+#properties-accordion-body { grid-template-columns: 1fr; gap: 20px 0; align-items: stretch; }
+#properties-container { grid-column: 1 / -1; }
+#add-property { grid-column: 1 / -1; justify-self: center; width: fit-content; margin-top: 5px; margin-bottom: 0; }
+
+
+/* --- GRID LAYOUT FOR FIELDS --- */
+.property-field {
+    grid-column: 1 / -1; /* Span full width by default */
+    display: contents; /* Make label and div direct grid items of the parent accordion-body */
+    /* Remove border/margin from wrapper itself */
+    margin-bottom: 0; padding-bottom: 0; border-bottom: none;
+}
+
+/* Label placement */
+.property-field > label {
+    grid-column: 1;
+    padding-top: 8px; /* Align with input padding */
+    /* Other label styles */
+}
+/* Control container placement */
+.property-field > div {
+    grid-column: 2;
+    /* Styles for the div containing the control */
+    display: flex; /* Use flex for potential internal alignment */
+    flex-direction: column;
+}
+/* Control width */
+.property-field > div > input,
+.property-field > div > select,
+.property-field > div > textarea {
+    width: 100%;
+}
+
+
+/* Specific field type adjustments */
+
+/* Checkbox: Label spans, contains input */
+.property-field.checkbox-field > label { /* Add checkbox-field class via JS */
+    grid-column: 1 / -1;
+    padding-top: 0;
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+}
+.property-field.checkbox-field > label input[type="checkbox"] {
+    width: auto;
+    margin-right: 8px;
+    flex-shrink: 0;
+}
+/* Hide the empty div for checkboxes */
+.property-field.checkbox-field > div {
+    display: none;
+}
+
+
+/* Full Width Elements (Textarea, Custom Renderers like Options/TextSettings) */
+.property-field.full-width > label,
+.property-field:has(> textarea) > label
+ {
+     grid-column: 1 / -1; /* Label above, spans full width */
+     margin-bottom: 5px;
+     padding-top: 0; /* Reset padding */
+}
+.property-field.full-width > div, /* Container for custom elements */
+.property-field:has(> textarea) > div /* Container for textarea */
+{
+    grid-column: 1 / -1; /* Control container also spans full width */
+}
+
+
+/* --- Specific Container Styles --- */
+
+/* Options Rows (Radio/Select Options Text/Value) */
+.options-container { padding-left: 0; margin-top: 5px; display: block; }
+.option-row {
+    display: flex; gap: 10px; align-items: center; margin-bottom: 8px;
+    padding: 8px; background: #f8f8f8; border: 1px solid #eee; border-radius: 4px;
+}
+.option-row label { flex: 1; font-weight: normal; padding-top: 0; margin-bottom: 0; } /* Override defaults */
+.option-row input { flex: 2; margin: 0; }
+.option-row button { flex: 0 0 auto; margin-left: 10px; margin-top: 0;}
+
+
+/* Text Settings Container */
+.textsettings-container {
+    margin-top: 10px; padding: 15px; border: 1px solid #e0e0e0;
+    border-radius: 4px; background-color: #fafafa; display: block;
+}
+.textsettings-container > div:first-child { /* Wrapper for enable checkbox */
+     display: flex; align-items: center; margin-bottom: 15px;
+}
+.textsettings-container > div:first-child label { font-weight: normal; margin-right: auto; padding-top: 0;}
+.textsettings-container > div:first-child input[type="checkbox"] { width: auto; margin-right: 5px; }
+.textsettings-container > div:first-child button { margin-top: 0; }
+
+/* Text Settings Field Rows - Use Flex for internal layout */
+.field-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 15px; /* Gap between fields */
+  align-items: baseline; /* Align baselines of fields */
+  margin-bottom: 15px;
+  padding: 15px;
+  background: #f1f1f1;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* Fields *inside* the field-row */
+.field-row > .property-field {
+  /* Use grid for label/input alignment within the field */
+  display: grid;
+  grid-template-columns: minmax(110px, auto) 1fr; /* Label and control columns */
+  gap: 5px 10px; /* Internal gap */
+  align-items: baseline;
+  /* Allow fields to grow/shrink within the flex row */
+  flex: 1 1 calc(50% - 15px); /* Aim for two columns, adjust calc based on gap */
+  min-width: 200px; /* Prevent fields from becoming too narrow */
+   /* Remove borders etc. from here - apply within if needed */
+   border-bottom: none;
+   padding-bottom: 0;
+   margin-bottom: 0;
+}
+
+.field-row > .property-field > label {
+   grid-column: 1;
+   padding-top: 8px; /* Align with input */
+   font-weight: normal;
+   /* Flex properties removed, handled by parent */
+}
+.field-row > .property-field > div {
+   grid-column: 2;
+   /* Flex properties removed */
+   display: flex; flex-direction: column; /* Keep for input+small tag */
+}
+
+/* Full width containers within field-row */
+.field-row > .textsettings-options-container,
+.field-row > .text-subtype-options-container,
+.field-row > .property-field.full-width /* Add class if needed */
+{
+  flex-basis: 100%; /* Make these span full width of the flex row */
+  min-width: 100%;
+  /* Apply grid styling if they contain label/input pairs */
+  display: grid;
+  grid-template-columns: minmax(110px, auto) 1fr;
+  gap: 10px 15px;
+  align-items: baseline;
+  margin-top: 10px; /* Space above these sections */
+}
+/* Reset grid column for labels/divs inside these full-width grid containers */
+.field-row > .textsettings-options-container > label,
+.field-row > .text-subtype-options-container > label {
+  grid-column: 1;
+}
+.field-row > .textsettings-options-container > div,
+.field-row > .text-subtype-options-container > div {
+  grid-column: 2;
+}
+
+
+.field-row > button.remove-field {
+  margin-left: auto; /* Push button right */
+  align-self: center; /* Vertically center */
+  flex-basis: auto; /* Let it size itself */
+}
+
+
+
+/* Attribute Rows - Use Flex */
+#css-attributes-container, #js-attributes-container {
+  margin-top: 10px; padding: 15px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px;
+}
+#css-attributes-container h4, #js-attributes-container h4 { margin: 0 0 10px 0; font-size: 1.1em; color: #495057; }
+#css-attributes-list div, #js-attributes-list div {
+  display: flex; gap: 10px; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #eee;
+}
+#css-attributes-list div:last-child, #js-attributes-list div:last-child { border-bottom: none; margin-bottom: 0;}
+#css-attributes-list label, #js-attributes-list label { flex: 1; margin-bottom: 0; font-weight: normal; padding-top: 0; }
+#css-attributes-list label:nth-of-type(2), #js-attributes-list label:nth-of-type(2) { flex: 2; }
+#css-attributes-list input, #js-attributes-list input { margin: 0; }
+#css-attributes-list button, #js-attributes-list button { flex: 0 0 auto; margin-top: 0; }
+
+
+/* JSON Preview */
+#preview-container h2 { margin: 0 0 15px 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+#json-preview {
+  font-family: monospace; font-size: 13px; line-height: 1.6; white-space: pre-wrap;
+  word-wrap: break-word; background: #fff; padding: 15px; border: 1px solid #ccc;
+  border-radius: 5px; overflow-y: auto; color: #333;
+}
+
+/* Filename preview */
+.filename-preview { font-family: monospace; font-size: 0.9em; color: #0056b3; background-color: #e9ecef; padding: 2px 5px; border-radius: 3px; margin-left: 5px; }
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 900px) { /* Adjust breakpoint for inline labels */
+     .accordion-item.active > .accordion-body,
+     .field-row > .textsettings-options-container,
+     .field-row > .text-subtype-options-container {
+        grid-template-columns: 1fr; /* Stack label/input */
+        gap: 5px 0;
+    }
+     .property-field { grid-template-columns: 1fr; }
+     .property-field > label,
+     .property-field > div { grid-column: 1; }
+     .property-field > label { margin-bottom: 3px; padding-top: 0; }
+     .property-field.full-width > label, /* Ensure full width labels still stack */
+     .property-field > label:has(input[type="checkbox"]) {
+         grid-column: 1;
+     }
+
+     .field-row { flex-direction: column; align-items: stretch; gap: 5px; }
+     .field-row > .property-field > label { flex-basis: auto; margin-right: 0; margin-bottom: 3px;}
+     .field-row > .property-field > div { flex-basis: auto; }
+     .field-row > button.remove-field { margin-left: 0; margin-top: 10px; align-self: flex-start; }
+}
+
+@media (max-width: 768px) { /* Stack form/preview earlier */
+    #main-container { flex-direction: column; gap: 25px; }
+    #form-container, #preview-container { min-width: 100%; }
+    #preview-container { position: static; max-height: 500px; margin-top: 20px; }
+    #css-attributes-list div, #js-attributes-list div { flex-direction: column; align-items: stretch; gap: 5px; }
+    #css-attributes-list label:nth-of-type(2), #js-attributes-list label:nth-of-type(2) { flex: 1; }
+    #css-attributes-list button, #js-attributes-list button { margin-left: 0; margin-top: 5px; }
+}
