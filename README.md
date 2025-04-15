@@ -1,15 +1,17 @@
 # Miva Flex Component Generator ⚙️
 
+> **_NOTE:_**  This tool is still in development
+
 A web-based tool to accelerate the creation of Miva Flex Components by generating the basic `flex.json` configuration file and folder structure through a user-friendly interface.
 
 ## Overview
 
-This application provides a dynamic web form where developers can define the metadata, properties, and default values for a Miva Flex Component. It features a live JSON preview that updates as the form is filled, helping to visualize the resulting `flex.json` structure. Upon submission, a backend service generates the necessary component folder, `flex.json` file, and placeholder template/asset files.
+This application provides a dynamic web form where developers can define the properties, advanced settings, and default values for a Miva Flex Component. It features a live JSON preview that updates as the form is filled, helping to visualize the resulting `flex.json` structure. Upon submission, a backend service generates the necessary component folder, `flex.json` file, and placeholder template/asset files.
 
 ## ✨ Features
 
 *   **Dynamic Form UI:** Generates form fields based on selected property types.
-*   **Wide Range of Property Types:** Supports common types like `text`, `textarea`, `number`, `select`, `radio`, `checkbox`, `image`, etc.
+*   **All Available Property Types:** Supports common types like `text`, `textarea`, `number`, `select`, `radio`, `checkbox`, `image`, etc.
 *   **Nested Structures:** Handles complex types like `group` (with nested properties) and `textsettings` (with nested fields).
 *   **Live JSON Preview:** Instantly see the generated `flex.json` structure as you modify the form.
 *   **CSS/JS File Inclusion:** Options to include placeholder CSS and JS files in the generated structure.
@@ -17,7 +19,6 @@ This application provides a dynamic web form where developers can define the met
 *   **Responsive Images:** Support for defining multiple sizes within the `image` property type.
 *   **Defaults Section:** Dedicated UI section to define default values for properties.
 *   **File Generation:** Creates the component directory, `flex.json`, basic `.mvt` templates, and optional CSS/JS files on the server.
-*   **Configurable:** Property types and their fields are defined in `config.js` for easier extension.
 
 ## 💻 Technology Stack
 
