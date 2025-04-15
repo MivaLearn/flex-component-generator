@@ -18,27 +18,37 @@ app.use(express.urlencoded({ extended: true })); // extended: true uses qs
 
 // --- Refined parseProperty Function ---
 // This function now expects a single property object as input
+// IMPORTANT: It IGNORES the 'default_value' field, which is handled separately.
 function parseProperty(propData) {
   if (!propData || !propData.code || !propData.prompt || !propData.type) {
     console.warn('Skipping incomplete property data:', propData);
     return null; // Skip incomplete properties
   }
 
+  const type = propData.type; // Capture type early for conditional logic
+  const code = propData.code.trim(); // Capture code for logging
+
   const base = {
-    code: propData.code.trim(),
+    code: code,
     prompt: propData.prompt.trim(),
-    type: propData.type,
+    type: type,
   };
 
   // Add optional string fields if they exist and are not empty
+  // Exclude 'default_value' here
   const stringFields = [
     'placeholder', 'preview_property_selector', 'text_type',
     'validation_pattern', 'validation_message', 'size', 'label',
-    'module_code', 'module_function', 'item_type', 'style', 'style_suffix' // Added more
+    'module_code', 'module_function', 'item_type', 'style', 'style_prefix', 'style_suffix' // Added more
   ];
   stringFields.forEach(field => {
-    if (propData[field] && String(propData[field]).trim() !== '') {
-      base[field] = String(propData[field]).trim();
+    // IMPORTANT check: Make sure field is not 'default_value'
+    if (field !== 'default_value' && propData[field] && String(propData[field]).trim() !== '') {
+        // Special handling for style prefix/suffix
+        if ((field === 'style_prefix' || field === 'style_suffix') && !propData.style?.trim()) return;
+        // Special handling for customlookup module/function (added within lookup object)
+        if (type === 'customlookup' && (field === 'module_code' || field === 'module_function')) return;
+        base[field] = String(propData[field]).trim();
     }
   });
 
@@ -46,14 +56,14 @@ function parseProperty(propData) {
    const booleanFields = ['required', 'markdown', 'collapsed', 'can_disable'];
    booleanFields.forEach(field => {
        if (propData[field] === 'true' || propData[field] === true) {
-           // Miva often uses 1 for true in JSON, adjust if necessary based on spec
-           base[field] = true; // Or set to 1 if Miva requires numbers
+           base[field] = true;
        }
    });
 
   // Numeric fields
   const numericFields = ['minlength', 'maxlength', 'min', 'max', 'step'];
   numericFields.forEach(field => {
+    // Check existence and non-empty string before converting
     if (propData[field] !== undefined && propData[field] !== '') {
       const num = Number(propData[field]);
       if (!isNaN(num)) {
@@ -63,7 +73,7 @@ function parseProperty(propData) {
   });
 
   // Options for select, radio, etc.
-  if (['select', 'radio', 'selector'].includes(propData.type) && propData.options && Array.isArray(propData.options)) {
+  if (['select', 'radio', 'selector'].includes(type) && propData.options && Array.isArray(propData.options)) {
     base.options = propData.options
       .map(opt => (opt && opt.text && opt.value) ? { text: opt.text.trim(), value: opt.value.trim() } : null)
       .filter(opt => opt !== null && opt.text && opt.value); // Ensure both text and value are non-empty
@@ -71,7 +81,7 @@ function parseProperty(propData) {
   }
 
   // Pseudoclasses for select/selector (assuming comma-separated input)
-   if (['select', 'selector'].includes(propData.type) && propData.pseudoclasses && typeof propData.pseudoclasses === 'string') {
+   if (['select', 'selector'].includes(type) && propData.pseudoclasses && typeof propData.pseudoclasses === 'string') {
        base.pseudoclasses = propData.pseudoclasses.split(',')
            .map(v => v.trim())
            .filter(Boolean);
@@ -80,32 +90,161 @@ function parseProperty(propData) {
 
 
   // Textsettings (check enable flag)
-  if (propData.type === 'textsettings' && propData.enable_textsettings === 'true' && propData.textsettings && propData.textsettings.fields && Array.isArray(propData.textsettings.fields)) {
+  // IMPORTANT: Recursive call must also ignore 'default_value'
+  if (type === 'textsettings' && propData.enable_textsettings === 'true' && propData.textsettings && propData.textsettings.fields && Array.isArray(propData.textsettings.fields)) {
       base.textsettings = {
           fields: propData.textsettings.fields
-              .map(fieldData => parseProperty(fieldData)) // Recursively parse nested fields
+              .map(fieldData => parseProperty(fieldData)) // Recursively parse nested fields (will ignore default_value)
               .filter(field => field !== null) // Filter out invalid nested fields
       };
       if (base.textsettings.fields.length === 0) delete base.textsettings; // Remove if empty
   }
 
   // Group/Grouplist Properties (requires recursive parsing)
-    if (['group', 'grouplist'].includes(propData.type) && propData.group_fields && Array.isArray(propData.group_fields)) {
-        // Assuming group_fields is an array of property data objects
-        base.group_fields = propData.group_fields
-            .map(fieldData => parseProperty(fieldData))
-            .filter(field => field !== null);
-        if (base.group_fields.length === 0) delete base.group_fields;
-    } else if (propData.type === 'group' && propData.properties && Array.isArray(propData.properties)) {
-         // Handle alternative 'properties' key for group if used
-         base.properties = propData.properties
-            .map(fieldData => parseProperty(fieldData))
-            .filter(field => field !== null);
-        if (base.properties.length === 0) delete base.properties;
+  // IMPORTANT: Recursive call must also ignore 'default_value'
+    if (['group', 'grouplist'].includes(type)) {
+        let sourceFields = null;
+        if (propData.group_fields && Array.isArray(propData.group_fields)) {
+             sourceFields = propData.group_fields;
+             base.group_fields = sourceFields // Default key for grouplist
+                .map(fieldData => parseProperty(fieldData))
+                .filter(field => field !== null);
+             if (base.group_fields.length === 0) delete base.group_fields;
+        } else if (propData.properties && Array.isArray(propData.properties)) {
+             // Handle alternative 'properties' key for group if used
+             sourceFields = propData.properties;
+             base.properties = sourceFields // Use 'properties' key for group
+                .map(fieldData => parseProperty(fieldData))
+                .filter(field => field !== null);
+            if (base.properties.length === 0) delete base.properties;
+        }
     }
 
 
+    // --- Handle customlookup ---
+    if (type === 'customlookup' && propData.lookup && typeof propData.lookup === 'object') {
+      const lookupData = propData.lookup;
+      const targetLookup = {};
+
+      // Validate and assign required fields
+      if (lookupData.module_code?.trim()) targetLookup.module_code = lookupData.module_code.trim(); else console.warn(`Missing module_code for customlookup ${code}`);
+      if (lookupData.module_function?.trim()) targetLookup.module_function = lookupData.module_function.trim(); else console.warn(`Missing module_function for customlookup ${code}`);
+      if (lookupData.selection_column?.trim()) targetLookup.selection_column = lookupData.selection_column.trim(); else console.warn(`Missing selection_column for customlookup ${code}`);
+
+      // Optional fields
+      if (lookupData.title?.trim()) targetLookup.title = lookupData.title.trim();
+      if (lookupData.default_sort?.trim()) targetLookup.default_sort = lookupData.default_sort.trim();
+
+      // Columns array
+      if (lookupData.columns && Array.isArray(lookupData.columns)) {
+          targetLookup.columns = lookupData.columns
+              .map(colData => {
+                  // Validate required column fields
+                  if (!colData || !colData.code?.trim() || !colData.header?.trim() || !colData.type?.trim()) {
+                      console.warn(`Skipping invalid column in customlookup ${code}:`, colData);
+                      return null;
+                  }
+                  const targetColumn = {
+                      code: colData.code.trim(),
+                      header: colData.header.trim(),
+                      type: colData.type.trim(),
+                  };
+                  // Optional booleans
+                  if (colData.sortable === 'true') targetColumn.sortable = true;
+                  if (colData.searchable === 'true') targetColumn.searchable = true;
+                  return targetColumn;
+              })
+              .filter(col => col !== null);
+
+          if (targetLookup.columns.length === 0) {
+               console.warn(`Customlookup ${code} has an empty 'columns' array after processing.`);
+               delete targetLookup.columns; // Remove empty array
+          }
+      } else {
+          console.warn(`Missing or invalid 'columns' array for customlookup ${code}`);
+      }
+
+      // Only add lookup object if essential fields are present
+      if (targetLookup.module_code && targetLookup.module_function && targetLookup.selection_column && targetLookup.columns) {
+          base.lookup = targetLookup;
+      } else {
+           console.error(`Failed to add 'lookup' object for property ${code} due to missing required fields.`);
+      }
+    }
+
   return base;
+}
+
+
+// --- NEW: Function to build the final defaults object ---
+/**
+ * Recursively processes original form property data to build the flat defaults object.
+ * @param {Array} propertyFormDataArray - The array of property data from req.body (e.g., req.body.properties).
+ * @param {Map} finalPropertyTypesMap - A map of property code -> type, generated from the final flexJson.properties.
+ * @param {object} targetDefaultsObject - The flexJson.defaults object to populate.
+ */
+function buildDefaultsObject(propertyFormDataArray, finalPropertyTypesMap, targetDefaultsObject) {
+    if (!Array.isArray(propertyFormDataArray)) {
+        // console.warn("buildDefaultsObject: Input is not an array:", propertyFormDataArray);
+        return;
+    }
+
+    propertyFormDataArray.forEach(propData => {
+        if (!propData) return; // Skip null/undefined entries
+
+        // Process the default value for the current property
+        // Check hasOwnProperty to ensure 'default_value' truly exists (and isn't inherited, though unlikely here)
+        // Also check it's not null/undefined/empty string
+        if (propData.code && propData.hasOwnProperty('default_value') && propData.default_value !== null && propData.default_value !== undefined && propData.default_value !== '') {
+            const code = String(propData.code).trim();
+            const type = finalPropertyTypesMap.get(code);
+            let valueToSet = propData.default_value; // Start with raw form value (often string)
+
+            if (type === undefined) {
+                // This might happen if a property was defined in the form but filtered out (e.g., incomplete) during parseProperty
+                console.warn(`Could not find type for property code "${code}" when processing defaults. Skipping default for this property.`);
+            } else {
+                 // Process/convert the value based on the final property type
+                if (type === 'checkbox') {
+                    // Form sends 'true' or 'false' string via the select dropdown used for boolean defaults
+                    valueToSet = (valueToSet === 'true'); // Convert string to boolean
+                } else if (['number', 'slider', 'distributedslider'].includes(type)) {
+                    const num = Number(valueToSet);
+                    if (!isNaN(num)) {
+                        valueToSet = num; // Convert to number if valid
+                    } else {
+                        console.warn(`Could not convert default value "${valueToSet}" to number for property "${code}" (type: ${type}). Skipping default.`);
+                        valueToSet = undefined; // Mark as invalid to prevent adding it
+                    }
+                } else if (['select', 'radio', 'selector', 'text', 'textarea', 'date', 'datetime', /* other string types */].includes(type)) {
+                     // Ensure value is string, trim it (usually already string from form)
+                     valueToSet = String(valueToSet).trim();
+                     // Add specific date/datetime validation or formatting if needed here
+                }
+                // Add more type conversions if necessary (e.g., date parsing, complex types)
+
+                // Only add to defaults object if the value is valid (not marked as undefined)
+                if (valueToSet !== undefined) {
+                    targetDefaultsObject[code] = { value: valueToSet };
+                }
+            }
+        }
+
+        // Recurse into nested properties using the original form data structure
+        // Note: Defaults are always flat, so we pass the same `targetDefaultsObject` down.
+        // Check for the keys used in your `parseProperty` for nested items.
+        if (propData.properties && Array.isArray(propData.properties)) { // Used by 'group'
+            buildDefaultsObject(propData.properties, finalPropertyTypesMap, targetDefaultsObject);
+        }
+        if (propData.group_fields && Array.isArray(propData.group_fields)) { // Used by 'grouplist'
+            buildDefaultsObject(propData.group_fields, finalPropertyTypesMap, targetDefaultsObject);
+        }
+         // Handle textsettings if their fields could potentially have defaults (rare)
+        if (propData.textsettings && propData.textsettings.fields && Array.isArray(propData.textsettings.fields)) {
+             buildDefaultsObject(propData.textsettings.fields, finalPropertyTypesMap, targetDefaultsObject);
+        }
+        // Add other potential nested structures if necessary
+    });
 }
 
 
@@ -126,7 +265,7 @@ app.post('/generate', async (req, res) => {
     css_attribute_value,
     js_attribute_name,
     js_attribute_value,
-    properties // This should now be an array/object from qs
+    properties // This should now be an array/object from qs, containing default_value fields
   } = formData;
 
   // Basic validation
@@ -160,11 +299,15 @@ app.post('/generate', async (req, res) => {
             const nameArray = Array.isArray(names) ? names : [names];
             const valueArray = Array.isArray(values) ? values : [values];
             nameArray.forEach((name, index) => {
-                if (name && valueArray[index]) {
-                    attributes.push({
-                        name: name.trim(),
-                        value: valueArray[index].trim(),
-                    });
+                if (name && valueArray[index]) { // Check both exist
+                    const trimmedName = name.trim();
+                    const trimmedValue = valueArray[index].trim();
+                    if (trimmedName && trimmedValue) { // Ensure non-empty after trim
+                        attributes.push({
+                            name: trimmedName,
+                            value: trimmedValue,
+                        });
+                    }
                 }
             });
         }
@@ -182,11 +325,12 @@ app.post('/generate', async (req, res) => {
       type,
       // category: category || null, // Include category only if selected
       resourcegroup_code: resourcegroup_code.trim(),
-      initialization_template: "init.mvt", // Standard names
-      instance_template: "instance.mvt",   // Standard names
+      initialization_template: "src/templates/init.mvt", // Use relative path
+      instance_template: "src/templates/instance.mvt",   // Use relative path
       styles: [],
       scripts: [],
-      properties: [] // Initialize properties array
+      properties: [] // Initialize properties array first
+      // Defaults object added later
     };
     if (category) { // Only add category if it has a value
         flexJson.category = category;
@@ -195,29 +339,64 @@ app.post('/generate', async (req, res) => {
     // Add styles if included
     if (include_css === 'true') {
       flexJson.styles.push({
-        filepath: `src/css/${folderName}.css`,
+        filepath: `src/css/${folderName}.css`, // Relative path
         resource_code: flexJson.resourcegroup_code,
-        attributes: cssAttributes,
+        ...(cssAttributes.length > 0 && { attributes: cssAttributes }), // Add attributes only if they exist
       });
     }
 
     // Add scripts if included
     if (include_js === 'true') {
       flexJson.scripts.push({
-        filepath: `src/js/${folderName}.js`,
+        filepath: `src/js/${folderName}.js`, // Relative path
         resource_code: flexJson.resourcegroup_code,
-        attributes: jsAttributes,
+        ...(jsAttributes.length > 0 && { attributes: jsAttributes }), // Add attributes only if they exist
       });
     }
 
-    // --- Process Properties ---
-    if (properties && typeof properties === 'object') {
-        // qs might return an object { '0': {...}, '1': {...} } or an array
-        const propertyArray = Array.isArray(properties) ? properties : Object.values(properties);
+    // --- Process Properties (using parseProperty, which ignores default_value) ---
+    // This step builds the final `flexJson.properties` structure.
+    const originalPropertyArray = properties && typeof properties === 'object'
+        ? (Array.isArray(properties) ? properties : Object.values(properties))
+        : []; // Ensure we have an array, even if empty
 
-        flexJson.properties = propertyArray
-            .map(propData => parseProperty(propData)) // Use the refined parseProperty
-            .filter(prop => prop !== null); // Filter out any null results from incomplete data
+    flexJson.properties = originalPropertyArray
+        .map(propData => parseProperty(propData)) // Use the refined parseProperty
+        .filter(prop => prop !== null); // Filter out any null results from incomplete data
+
+    // --- NEW: Build Defaults Object ---
+    flexJson.defaults = {}; // Initialize the defaults object
+
+    // 1. Create a map of code -> type from the FINAL properties structure
+    const finalPropTypes = new Map();
+    function buildFinalTypeMap(propsArray, map) {
+        if (!Array.isArray(propsArray)) return;
+        propsArray.forEach(prop => {
+            if (prop && prop.code && prop.type) {
+                map.set(prop.code, prop.type);
+            }
+            // Recurse into nested structures based on keys present in final flexJson.properties
+             if (prop && prop.properties && Array.isArray(prop.properties)) { // For groups
+                 buildFinalTypeMap(prop.properties, map);
+             }
+             if (prop && prop.group_fields && Array.isArray(prop.group_fields)) { // For grouplists
+                 buildFinalTypeMap(prop.group_fields, map);
+             }
+             if (prop && prop.textsettings && Array.isArray(prop.textsettings)) { // If textsettings is an array of fields
+                 buildFinalTypeMap(prop.textsettings, map);
+             }
+             // Add other nested possibilities if they exist (e.g., inside lookup columns? unlikely)
+        });
+    }
+    buildFinalTypeMap(flexJson.properties, finalPropTypes); // Populate the map
+
+    // 2. Process the ORIGINAL form data using the type map to build the defaults
+    // Pass the original array derived from formData.properties
+    buildDefaultsObject(originalPropertyArray, finalPropTypes, flexJson.defaults);
+
+    // 3. Clean up empty defaults object if no defaults were actually set
+    if (Object.keys(flexJson.defaults).length === 0) {
+        delete flexJson.defaults;
     }
 
     // --- Write Files ---
@@ -244,7 +423,7 @@ app.post('/generate', async (req, res) => {
       await fs.writeFile(path.join(jsDir, jsFileName), jsContent);
     }
 
-    // Respond with success - consider sending back the path or a link if desired
+    // Respond with success
     res.status(200).json({
         message: `Component '${component_name}' generated successfully!`,
         directory: `generated/${folderName}` // Inform client where files are (relative)

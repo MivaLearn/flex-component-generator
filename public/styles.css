@@ -238,6 +238,175 @@ button[type="submit"] { padding: 12px 25px; font-size: 1.1em; margin-top: 25px; 
   flex-basis: auto; /* Let it size itself */
 }
 
+/* --- Custom Lookup Specific Styles --- */
+.custom-lookup-container {
+  margin-top: 15px; /* Add space above the lookup config */
+  padding: 15px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background-color: #fafafa;
+  /* Use grid layout consistent with accordion-body */
+  display: grid;
+  grid-template-columns: minmax(130px, auto) 1fr; /* Label column & Input column */
+  gap: 10px 15px; /* Row gap, Column gap */
+  align-items: baseline; /* Align label/input text baseline */
+}
+
+.custom-lookup-container h4 {
+  grid-column: 1 / -1; /* Span full width */
+  margin: 0 0 10px 0;
+  padding-bottom: 10px;
+  border-bottom: 1px dashed #ccc;
+  font-size: 1.1em;
+  color: #333;
+}
+
+/* Ensure fields inside lookup container follow grid */
+.custom-lookup-container > .property-field {
+  display: contents; /* Make label/div grid items */
+}
+.custom-lookup-container > .property-field > label {
+  grid-column: 1;
+  padding-top: 8px;
+}
+.custom-lookup-container > .property-field > div {
+  grid-column: 2;
+}
+
+/* Styling for the Columns Section */
+.columns-section {
+  grid-column: 1 / -1; /* Span full width */
+  margin-top: 20px;
+  padding-top: 15px;
+  border-top: 1px dashed #ccc;
+}
+.columns-section > label { /* The "Columns:" label */
+  grid-column: 1 / -1;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+.columns-section > div { /* Container for list and button */
+   grid-column: 1 / -1;
+}
+
+.columns-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px; /* Space between column rows */
+}
+
+.column-row {
+  /* Reuse field-row flex styles for internal layout */
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 15px; /* Gap between fields */
+  align-items: baseline; /* Align baselines */
+  padding: 15px;
+  background: #f1f1f1;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+/* Fields *inside* the column-row */
+.column-row > .property-field {
+  /* Use grid for label/input alignment */
+  display: grid;
+  grid-template-columns: minmax(80px, auto) 1fr; /* Smaller label column */
+  gap: 5px 8px; /* Internal gap */
+  align-items: baseline;
+  flex: 1 1 calc(33% - 15px); /* Aim for three columns, adjust calc based on gap */
+  min-width: 150px;
+}
+.column-row > .property-field.checkbox-field {
+   flex-grow: 0; /* Don't let checkboxes grow too much */
+   min-width: 100px;
+   grid-template-columns: auto; /* Override grid for checkbox */
+}
+.column-row > .property-field.checkbox-field > label {
+  grid-column: 1; /* Reset grid column */
+  display: flex; align-items: center; font-weight: normal; padding-top: 0;
+}
+.column-row > .property-field.checkbox-field input[type="checkbox"] {
+   width: auto; margin-right: 5px;
+}
+.column-row > .property-field.checkbox-field > div { display: none; } /* Hide empty div */
+
+.column-row > .property-field > label {
+ grid-column: 1;
+ padding-top: 8px;
+ font-weight: normal; /* Lighter weight for sub-fields */
+}
+.column-row > .property-field > div {
+ grid-column: 2;
+ display: flex; flex-direction: column;
+}
+
+.column-row > button.remove-column {
+  margin-left: auto; /* Push button right */
+  align-self: center; /* Vertically center */
+  flex-basis: auto; /* Let it size itself */
+  background-color: #dc3545; /* Consistent remove color */
+  padding: 4px 8px; font-size: 0.8em;
+}
+.column-row > button.remove-column:hover { background-color: #c82333; }
+
+/* Adjust breakpoints if needed */
+@media (max-width: 900px) {
+  .custom-lookup-container {
+      grid-template-columns: 1fr; /* Stack label/input */
+  }
+   .custom-lookup-container > .property-field > label,
+   .custom-lookup-container > .property-field > div {
+      grid-column: 1;
+   }
+   .custom-lookup-container > .property-field > label { margin-bottom: 3px; padding-top: 0; }
+
+  .column-row { flex-direction: column; align-items: stretch; } /* Stack fields within column row */
+  .column-row > .property-field { min-width: 100%; }
+}
+
+/* Default Value Field placement (should behave like other simple fields) */
+.property-field.default-value-field {
+  /* Uses 'display: contents' set by JS */
+}
+
+.property-field.default-value-field > label {
+  grid-column: 1;
+  padding-top: 8px; /* Align with input padding */
+  /* Other label styles */
+}
+.property-field.default-value-field > div {
+  grid-column: 2;
+  /* Styles for the div containing the control */
+  display: flex; /* Use flex for potential internal alignment */
+  flex-direction: column;
+}
+/* Control width */
+.property-field.default-value-field > div > input,
+.property-field.default-value-field > div > select,
+.property-field.default-value-field > div > textarea {
+  width: 100%;
+}
+
+/* Adjustments for default checkbox (using select) */
+.property-field.default-value-checkbox > label {
+  /* Standard label alignment */
+}
+.property-field.default-value-checkbox > div > select {
+  /* Standard select styling */
+}
+
+/* --- Responsive Adjustments --- */
+@media (max-width: 900px) { /* Adjust breakpoint for inline labels */
+   /* ... existing responsive rules ... */
+
+   /* Ensure default value fields stack correctly */
+   .property-field.default-value-field { grid-template-columns: 1fr; }
+   .property-field.default-value-field > label,
+   .property-field.default-value-field > div { grid-column: 1; }
+   .property-field.default-value-field > label { margin-bottom: 3px; padding-top: 0; }
+}
+
 
 
 /* Attribute Rows - Use Flex */
