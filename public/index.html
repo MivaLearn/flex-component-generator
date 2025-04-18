@@ -2,35 +2,71 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- Added viewport for responsiveness -->
   <title>Miva Flex Component Generator</title>
   <link rel="stylesheet" href="styles.css">
+  <!-- Optional: Add Favicon -->
+  <!-- <link rel="icon" href="favicon.ico" type="image/x-icon"> -->
 </head>
 <body>
 
   <h1>Miva Flex Component Generator</h1>
+  <p style="text-align: center; margin-top: -1.5em; margin-bottom: 2em; color: #555;">
+      Define your component's structure and settings below. The JSON preview will update live.
+  </p>
 
-  <div id="main-container" style="display: flex; gap: 20px; align-items: flex-start;">
+  <!-- Main container for form and preview -->
+  <div id="main-container">
+
     <!-- Form Container -->
-    <div id="form-container" style="flex: 1;">
-      <form action="/generate" method="POST">
-        <!-- This section will be filled in by renderer.js -->
+    <div id="form-container">
+      <!--
+        The actual form element.
+        - `id="component-form"` is used by JS to target the form.
+        - `action` and `method` attributes are removed as submission is handled via JavaScript (Fetch API).
+        - `novalidate` can be added to disable default browser validation if using custom JS validation.
+      -->
+      <form id="component-form">
+
+        <!--
+          This div will be populated by renderer.js with the accordion structure
+          (Component Details, Properties, Advanced Properties, Defaults).
+        -->
         <div id="form-content">
-          <div id="properties-container"></div>
-          <button id="add-property" type="button">Add Property</button>
+          <!-- Dynamic content goes here -->
+           <p>Loading form structure...</p> <!-- Placeholder content -->
         </div>
 
+        <!-- Submission Button -->
         <button type="submit">Generate Component Files</button>
+
+        <!--
+          Div for displaying status messages during form submission (e.g., "Generating...", "Success!", "Error...").
+          Styled via CSS. Content set by main.js.
+        -->
+        <div id="form-message"></div>
       </form>
-    </div>
+    </div> <!-- End Form Container -->
 
     <!-- JSON Preview Container -->
-    <div id="preview-container" style="flex: 1; background: #f9f9f9; padding: 20px; border: 1px solid #ddd; border-radius: 5px;">
+    <div id="preview-container">
       <h2>JSON Preview</h2>
-      <pre id="json-preview" style="white-space: pre-wrap; word-wrap: break-word; background: #fff; padding: 10px; border: 1px solid #ccc; border-radius: 5px; height: calc(100vh - 300px); overflow-y: auto;"></pre>
-    </div>
-  </div>
+      <!--
+        The <pre> tag preserves whitespace and formatting.
+        - `id="json-preview"` is used by JS to display the generated JSON.
+        - Styling is applied via CSS for background, border, scrolling, font, etc.
+      -->
+      <pre id="json-preview">Initializing preview...</pre> <!-- Placeholder content -->
+    </div> <!-- End Preview Container -->
 
-  <!-- Load JavaScript modules -->
+  </div> <!-- End Main Container -->
+
+  <!--
+    Load the main JavaScript file as a module.
+    This script orchestrates the application, imports other modules (renderer, preview, config, utils),
+    and sets up event listeners.
+    `type="module"` is crucial for using ES6 import/export syntax.
+  -->
   <script type="module" src="main.js"></script>
 </body>
 </html>

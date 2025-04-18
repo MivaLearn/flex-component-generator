@@ -1,20 +1,25 @@
 {
   "name": "miva-component-generator",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "1.0.1",
+  "description": "A web-based tool to generate Miva Flex Components.",
+  "main": "server.js",
   "scripts": {
+    "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "keywords": [
+    "miva",
+    "flex",
+    "component",
+    "generator"
+  ],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
-    "compressjs": "^1.0.3",
-    "express": "^5.1.0",
-    "fs-extra": "^11.3.0",
-    "node-bzip": "^0.0.1-2",
-    "qs": "^6.14.0",
-    "tar": "^7.4.3"
+    "express": "^4.19.2",  
+    "fs-extra": "^11.2.0" 
+  },
+  "engines": {
+     "node": ">=14.0.0" 
   }
 }

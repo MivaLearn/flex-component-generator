@@ -1,142 +1,311 @@
 /* styles.css */
 
+/* --- Base and Reset --- */
 html { box-sizing: border-box; }
 *, *:before, *:after { box-sizing: inherit; }
 
 body {
-  font-family: sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   padding: 20px;
   font-size: 14px;
   line-height: 1.5;
+  background-color: #f4f7f9;
+  color: #333;
 }
 
-h1, h2 { color: #333; margin-top: 0; margin-bottom: 1em; }
-h1 { text-align: center; margin-bottom: 1.5em; }
+h1, h2 { color: #1a2b4d; margin-top: 0; margin-bottom: 1em; }
+h1 { text-align: center; margin-bottom: 1.5em; font-weight: 600; }
+h2 { font-weight: 500; border-bottom: 1px solid #e0e0e0; padding-bottom: 0.5em; }
+h4 { font-size: 1.1em; color: #333; margin: 0 0 10px 0; font-weight: 500; }
+h5 { font-size: 1.05em; color: #333; margin: 15px 0 5px 0; font-weight: 500; }
 
 /* --- Main Layout --- */
-#main-container { display: flex; gap: 30px; align-items: flex-start; }
-#form-container { flex: 2; min-width: 450px; }
+#main-container {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    max-width: 1600px; /* Limit max width for very wide screens */
+    margin: 0 auto; /* Center the container */
+}
+#form-container {
+    flex: 2; /* Takes up more space */
+    min-width: 500px; /* Minimum width before wrapping */
+    background: #fff;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
 #preview-container {
-    flex: 1; min-width: 350px; background: #f9f9f9; padding: 20px;
-    border: 1px solid #ddd; border-radius: 5px; position: sticky; top: 20px;
-    max-height: calc(100vh - 40px); overflow-y: auto;
+    flex: 1; /* Takes less space */
+    min-width: 400px;
+    background: #fdfdfd; /* Slightly off-white */
+    padding: 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    position: sticky; /* Keep preview visible on scroll */
+    top: 20px;
+    max-height: calc(100vh - 40px); /* Limit height to viewport */
+    overflow-y: auto; /* Allow scrolling within preview */
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05);
 }
 
 /* --- General Form Element Styling --- */
 label {
-  font-weight: bold; color: #333;
-  /* Alignment handled by grid context */
-  padding-top: 8px; /* Align with input padding */
+  font-weight: 500; /* Slightly less bold */
+  color: #333;
+  /* Grid alignment handles placement */
+  padding-top: 8px; /* Align baseline with input padding */
   margin-bottom: 0;
   align-self: baseline;
-  overflow-wrap: break-word; word-wrap: break-word; hyphens: auto; /* Prevent long labels breaking layout */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  hyphens: auto; /* Help break long labels */
+  display: block; /* Ensure label takes block space for grid alignment */
 }
 
-/* REMOVE small tag styling */
-/* label > small { ... } */
-
-input[type="text"], input[type="number"], textarea, select {
-  width: 100%; padding: 8px; margin: 0;
-  border: 1px solid #ccc; border-radius: 4px; font-size: 1em; box-sizing: border-box;
+/* Style tooltips */
+[title] {
+  cursor: help;
+  /* Optional: Add underline for better affordance */
+  /* border-bottom: 1px dotted #aaa; */
 }
-textarea { resize: vertical; min-height: 70px; }
+
+input[type="text"],
+input[type="number"],
+input[type="color"], /* Style color input text part */
+textarea,
+select {
+  width: 100%;
+  padding: 8px 10px;
+  margin: 0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1em;
+  box-sizing: border-box;
+  background-color: #fff;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="color"]:focus,
+textarea:focus,
+select:focus {
+  border-color: #007bff;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.2);
+  outline: none;
+}
+input[type="color"] { /* Specific styling for the color picker itself */
+    padding: 2px; /* Reduce padding for the picker */
+    height: 36px; /* Match text input height */
+    vertical-align: middle;
+}
+/* Container for color picker + text input */
+input[type="color"] + input[type="text"] {
+    margin-left: 5px !important;
+    flex-grow: 1;
+}
+
+
+textarea { resize: vertical; min-height: 75px; }
+select { appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23007bff%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 10px center; background-size: 8px 10px; padding-right: 30px; }
+input:disabled, select:disabled, textarea:disabled { background-color: #e9ecef; cursor: not-allowed; }
+
+
 button {
-  margin-top: 10px; padding: 10px 15px; font-size: 1em; background-color: #007bff;
-  color: white; border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.2s ease;
+  margin-top: 10px;
+  padding: 10px 15px;
+  font-size: 1em;
+  font-weight: 500;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, box-shadow 0.2s ease;
 }
 button:hover { background-color: #0056b3; }
-button[type="submit"] { padding: 12px 25px; font-size: 1.1em; margin-top: 25px; display: block; margin-left: auto; margin-right: auto; }
-.remove-property, .remove-field, .remove-option, .remove-attribute {
-    padding: 5px 10px; font-size: 0.85em; background-color: #dc3545; color: white;
-    border: none; border-radius: 4px; cursor: pointer; height: fit-content; margin-left: auto;
+button:focus { outline: none; box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.3); }
+button:disabled { background-color: #6c757d; cursor: not-allowed; }
+
+button[type="submit"] {
+    padding: 12px 25px;
+    font-size: 1.1em;
+    font-weight: 600;
+    margin-top: 25px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    min-width: 200px;
 }
-.remove-property:hover, .remove-field:hover, .remove-option:hover, .remove-attribute:hover { background-color: #c82333; }
+
+.remove-property, .remove-field, .remove-option, .remove-attribute, .remove-column, .remove-responsive-image {
+    padding: 5px 10px;
+    font-size: 0.85em;
+    font-weight: 500;
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    height: fit-content; /* Adjust height to content */
+    margin-left: auto; /* Push right within flex/grid context */
+    line-height: 1.4; /* Adjust line height for small buttons */
+    transition: background-color 0.2s ease;
+}
+.remove-property:hover, .remove-field:hover, .remove-option:hover, .remove-attribute:hover, .remove-column:hover, .remove-responsive-image:hover {
+    background-color: #c82333;
+}
+
 
 /* --- Accordion Styles --- */
-.accordion-item { margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px; overflow: hidden; background-color: #fff; }
-.accordion-header {
-  background-color: #f1f1f1; color: #333; padding: 12px 15px; font-size: 1.1em;
-  font-weight: bold; cursor: pointer; border: none; border-bottom: 1px solid #ddd;
-  text-align: left; width: 100%; margin-top: 0;
-}
-.accordion-header:hover { background-color: #e0e0e0; }
-.accordion-item.active > .accordion-header { background-color: #007bff; color: white; border-bottom-color: #0056b3; }
+#accordion { border: 1px solid #d1d9e0; border-radius: 8px; overflow: hidden; }
+.accordion-item { margin-bottom: 0; border: none; border-bottom: 1px solid #d1d9e0; background-color: #fff; }
+.accordion-item:last-child { border-bottom: none; }
 
-.accordion-body { display: none; padding: 20px; background-color: #fff; }
-.accordion-item.active > .accordion-body {
-  display: grid;
-  grid-template-columns: minmax(130px, auto) 1fr; /* Label column & Input column */
-  gap: 10px 15px; /* Row gap, Column gap */
+.accordion-header {
+  background-color: #f8f9fa;
+  color: #343a40;
+  padding: 12px 18px;
+  font-size: 1.05em; /* Slightly smaller */
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  /* border-bottom: 1px solid #d1d9e0; */ /* Moved to .accordion-item */
+  text-align: left;
+  width: 100%;
+  margin-top: 0;
+  transition: background-color 0.2s ease;
+  position: relative; /* For pseudo-element */
+  padding-left: 40px; /* Space for indicator */
+}
+/* Indicator arrow */
+.accordion-header::before {
+  content: '+'; /* Plus sign for collapsed */
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.4em;
+  font-weight: bold;
+  color: #007bff;
+  transition: transform 0.2s ease;
+}
+.accordion-item.active > .accordion-header::before {
+  content: '−'; /* Minus sign for expanded */
+  /* transform: translateY(-50%) rotate(45deg); */ /* Alternative: rotating plus */
+}
+
+
+.accordion-header:hover { background-color: #e9ecef; }
+.accordion-item.active > .accordion-header {
+  background-color: #007bff;
+  color: white;
+  border-bottom-color: #0056b3; /* Darker border when active */
+}
+.accordion-item.active > .accordion-header::before {
+  color: white; /* White indicator on active header */
+}
+
+
+.accordion-body {
+  display: none; /* Hidden by default */
+  padding: 20px 25px;
+  background-color: #fff;
+  border-top: 1px solid #e0e0e0; /* Separator line */
+  /* Grid layout for fields within the body */
+  grid-template-columns: minmax(140px, auto) 1fr; /* Label column (min 140px) & Input column */
+  gap: 12px 18px; /* Row gap, Column gap */
   align-items: baseline; /* Align label/input text baseline */
 }
 
-/* Properties Accordion Body - Single Column */
-#properties-accordion-body { grid-template-columns: 1fr; gap: 20px 0; align-items: stretch; }
-#properties-container { grid-column: 1 / -1; }
-#add-property { grid-column: 1 / -1; justify-self: center; width: fit-content; margin-top: 5px; margin-bottom: 0; }
-
-
-/* --- GRID LAYOUT FOR FIELDS --- */
-.property-field {
-    grid-column: 1 / -1; /* Span full width by default */
-    display: contents; /* Make label and div direct grid items of the parent accordion-body */
-    /* Remove border/margin from wrapper itself */
-    margin-bottom: 0; padding-bottom: 0; border-bottom: none;
+.accordion-body > button {
+  grid-column: 1 / -1;      /* Span the full grid width */
+  justify-self: center;   /* Center the button horizontally */
+  margin-top: 20px;       /* Add space above the button */
+  margin-bottom: 10px;    /* Add space below the button */
+  width: fit-content;     /* Button width adjusts to content */
+  /* Optional: Make it wider */
+  /* min-width: 200px; */
+  /* text-align: center; */
+  padding: 8px 20px;      /* Adjust padding */
+  font-weight: 500;
 }
 
-/* Label placement */
+#properties-accordion-body{
+  grid-template-columns: auto; /* Single column for properties */
+}
+
+
+
+.accordion-item.active > .accordion-body {
+  display: grid; /* Show when active */
+}
+
+/* --- GRID LAYOUT FOR FIELDS within accordion body --- */
+/* This assumes .accordion-body is the direct grid container */
+
+.property-field {
+    grid-column: 1 / -1; /* Default: Span full width */
+    /* Use 'contents' to make label/div direct children of the grid container (.accordion-body) */
+    display: contents;
+    margin-bottom: 0; padding-bottom: 0; border-bottom: none; /* Reset wrapper styles */
+}
+
+/* Label placement within the grid */
 .property-field > label {
-    grid-column: 1;
-    padding-top: 8px; /* Align with input padding */
+    grid-column: 1; /* Place in the first column */
     /* Other label styles */
 }
-/* Control container placement */
+/* Control container placement within the grid */
 .property-field > div {
-    grid-column: 2;
-    /* Styles for the div containing the control */
-    display: flex; /* Use flex for potential internal alignment */
-    flex-direction: column;
-}
-/* Control width */
-.property-field > div > input,
-.property-field > div > select,
-.property-field > div > textarea {
-    width: 100%;
+    grid-column: 2; /* Place in the second column */
+    display: flex; /* Use flex for potential internal alignment (e.g., color picker) */
+    flex-direction: column; /* Stack elements vertically if needed */
 }
 
+/* Specific field type adjustments for grid layout */
 
-/* Specific field type adjustments */
-
-/* Checkbox: Label spans, contains input */
-.property-field.checkbox-field > label { /* Add checkbox-field class via JS */
-    grid-column: 1 / -1;
-    padding-top: 0;
+/* Checkbox: Label spans both columns and contains the input */
+.property-field.checkbox-field > label {
+    grid-column: 1 / -1; /* Span full width */
+    padding-top: 0; /* Reset padding */
     display: flex;
     align-items: center;
-    font-weight: normal;
+    font-weight: 500; /* Match regular label weight */
+    cursor: pointer; /* Indicate clickable */
 }
 .property-field.checkbox-field > label input[type="checkbox"] {
-    width: auto;
+    width: auto; /* Intrinsic width */
     margin-right: 8px;
-    flex-shrink: 0;
+    flex-shrink: 0; /* Prevent shrinking */
+    cursor: pointer;
+    /* Enhance checkbox appearance (optional) */
+    width: 16px; height: 16px; vertical-align: middle; margin-top: -2px;
 }
-/* Hide the empty div for checkboxes */
+/* Hide the empty div associated with checkbox fields as it's not needed */
 .property-field.checkbox-field > div {
     display: none;
 }
 
 
-/* Full Width Elements (Textarea, Custom Renderers like Options/TextSettings) */
+/* Full Width Elements: Label above, Control below */
 .property-field.full-width > label,
-.property-field:has(> textarea) > label
- {
-     grid-column: 1 / -1; /* Label above, spans full width */
-     margin-bottom: 5px;
+.property-field:has(> textarea) > label,
+/* Apply to wrappers containing complex custom elements like options/textsettings */
+.property-field:has(> .options-container) > label,
+.property-field:has(> .textsettings-container) > label,
+.property-field:has(> .responsive-images-list) > label,
+.property-field:has(> .custom-lookup-container) > label {
+     grid-column: 1 / -1; /* Label spans full width */
+     margin-bottom: 5px; /* Space between label and control */
      padding-top: 0; /* Reset padding */
 }
-.property-field.full-width > div, /* Container for custom elements */
-.property-field:has(> textarea) > div /* Container for textarea */
-{
+.property-field.full-width > div,
+.property-field:has(> textarea) > div,
+.property-field:has(> .options-container) > div,
+.property-field:has(> .textsettings-container) > div,
+.property-field:has(> .responsive-images-list) > div,
+.property-field:has(> .custom-lookup-container) > div {
     grid-column: 1 / -1; /* Control container also spans full width */
 }
 
@@ -146,80 +315,117 @@ button[type="submit"] { padding: 12px 25px; font-size: 1.1em; margin-top: 25px; 
 /* Options Rows (Radio/Select Options Text/Value) */
 .options-container { padding-left: 0; margin-top: 5px; display: block; }
 .option-row {
-    display: flex; gap: 10px; align-items: center; margin-bottom: 8px;
-    padding: 8px; background: #f8f8f8; border: 1px solid #eee; border-radius: 4px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 10px 12px;
+    background: #f8f8f8;
+    border: 1px solid #eee;
+    border-radius: 4px;
 }
-.option-row label { flex: 1; font-weight: normal; padding-top: 0; margin-bottom: 0; } /* Override defaults */
+.option-row label { flex: 1; font-weight: normal; padding-top: 0; margin-bottom: 0; display: flex; align-items: center; gap: 5px; }
+.option-row label > span { /* Optional: fixed width for "Text:", "Value:" */
+    /* display: inline-block; width: 40px; */
+}
 .option-row input { flex: 2; margin: 0; }
-.option-row button { flex: 0 0 auto; margin-left: 10px; margin-top: 0;}
+.option-row button.remove-option { flex: 0 0 auto; margin-left: 10px; margin-top: 0;} /* Ensure button doesn't flex */
 
 
 /* Text Settings Container */
 .textsettings-container {
-    margin-top: 10px; padding: 15px; border: 1px solid #e0e0e0;
-    border-radius: 4px; background-color: #fafafa; display: block;
+    margin-top: 10px;
+    padding: 15px 20px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    background-color: #fbfcfe; /* Slightly different background */
+    display: block; /* Takes full width */
 }
-.textsettings-container > div:first-child { /* Wrapper for enable checkbox */
-     display: flex; align-items: center; margin-bottom: 15px;
+/* Wrapper for enable checkbox and add button */
+.textsettings-container > div:first-child {
+     display: flex;
+     align-items: center;
+     margin-bottom: 15px;
+     padding-bottom: 10px;
+     border-bottom: 1px dashed #ddd;
 }
-.textsettings-container > div:first-child label { font-weight: normal; margin-right: auto; padding-top: 0;}
-.textsettings-container > div:first-child input[type="checkbox"] { width: auto; margin-right: 5px; }
-.textsettings-container > div:first-child button { margin-top: 0; }
+.textsettings-container > div:first-child label { margin-right: auto; padding-top: 0; } /* Push button right */
+.textsettings-container > div:first-child button.btn-add-text-setting { margin-top: 0; margin-left: 15px; } /* Space if button is visible */
 
-/* Text Settings Field Rows - Use Flex for internal layout */
+/* Container for the actual fields */
+.fields-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Space between field rows */
+}
+
+/* Text Settings Field Rows */
 .field-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 15px; /* Gap between fields */
-  align-items: baseline; /* Align baselines of fields */
-  margin-bottom: 15px;
+  display: grid; /* Use grid for internal layout */
+  /* Define columns for label/input pairs within the row */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* Responsive columns */
+  gap: 10px 18px; /* Row and column gap */
+  align-items: baseline;
+  margin-bottom: 0; /* Managed by fields-container gap */
   padding: 15px;
-  background: #f1f1f1;
-  border: 1px solid #ddd;
+  background: #f1f4f6; /* Slightly different background for contrast */
+  border: 1px solid #d8dde2;
   border-radius: 4px;
+  position: relative; /* For remove button positioning */
 }
 
-/* Fields *inside* the field-row */
+/* Individual Fields *inside* the field-row */
 .field-row > .property-field {
-  /* Use grid for label/input alignment within the field */
+  /* Use grid for label/input alignment within each field area */
   display: grid;
   grid-template-columns: minmax(110px, auto) 1fr; /* Label and control columns */
   gap: 5px 10px; /* Internal gap */
   align-items: baseline;
-  /* Allow fields to grow/shrink within the flex row */
-  flex: 1 1 calc(50% - 15px); /* Aim for two columns, adjust calc based on gap */
-  min-width: 200px; /* Prevent fields from becoming too narrow */
-   /* Remove borders etc. from here - apply within if needed */
+  /* Reset inherited styles that don't apply here */
    border-bottom: none;
    padding-bottom: 0;
    margin-bottom: 0;
+   display: contents; /* Make label/div direct grid children of .property-field's effective container*/
 }
 
 .field-row > .property-field > label {
    grid-column: 1;
    padding-top: 8px; /* Align with input */
-   font-weight: normal;
-   /* Flex properties removed, handled by parent */
+   font-weight: normal; /* Lighter weight for sub-fields */
 }
 .field-row > .property-field > div {
    grid-column: 2;
-   /* Flex properties removed */
    display: flex; flex-direction: column; /* Keep for input+small tag */
 }
 
-/* Full width containers within field-row */
+/* Style prefix/suffix fields */
+.field-row .style-prefix-field,
+.field-row .style-suffix-field {
+    /* display: contents; */ /* Already applied by .property-field */
+}
+
+/* Checkbox layout within field row */
+.field-row > .property-field.checkbox-field > label {
+  grid-column: 1 / -1; /* Span */
+  padding-top: 0;
+}
+.field-row > .property-field.checkbox-field > div {
+  display: none;
+}
+
+/* Full width containers within field-row (for textsetting options, etc.) */
 .field-row > .textsettings-options-container,
 .field-row > .text-subtype-options-container,
-.field-row > .property-field.full-width /* Add class if needed */
-{
-  flex-basis: 100%; /* Make these span full width of the flex row */
-  min-width: 100%;
+.field-row > .property-field.full-width {
+  grid-column: 1 / -1; /* Make these span full width of the grid row */
   /* Apply grid styling if they contain label/input pairs */
   display: grid;
   grid-template-columns: minmax(110px, auto) 1fr;
   gap: 10px 15px;
   align-items: baseline;
   margin-top: 10px; /* Space above these sections */
+  padding-top: 10px;
+  border-top: 1px dashed #ccc; /* Separator */
 }
 /* Reset grid column for labels/divs inside these full-width grid containers */
 .field-row > .textsettings-options-container > label,
@@ -232,29 +438,32 @@ button[type="submit"] { padding: 12px 25px; font-size: 1.1em; margin-top: 25px; 
 }
 
 
+/* Remove field button positioning */
 .field-row > button.remove-field {
-  margin-left: auto; /* Push button right */
-  align-self: center; /* Vertically center */
-  flex-basis: auto; /* Let it size itself */
+  position: absolute; /* Position relative to field-row */
+  top: 10px;
+  right: 10px;
+  margin-top: 0; /* Reset margin */
 }
+
 
 /* --- Custom Lookup Specific Styles --- */
 .custom-lookup-container {
-  margin-top: 15px; /* Add space above the lookup config */
-  padding: 15px;
+  margin-top: 15px;
+  padding: 20px;
   border: 1px solid #e0e0e0;
   border-radius: 4px;
-  background-color: #fafafa;
+  background-color: #fbfcfe;
   /* Use grid layout consistent with accordion-body */
   display: grid;
-  grid-template-columns: minmax(130px, auto) 1fr; /* Label column & Input column */
-  gap: 10px 15px; /* Row gap, Column gap */
-  align-items: baseline; /* Align label/input text baseline */
+  grid-template-columns: minmax(140px, auto) 1fr; /* Label column & Input column */
+  gap: 10px 15px;
+  align-items: baseline;
 }
 
 .custom-lookup-container h4 {
   grid-column: 1 / -1; /* Span full width */
-  margin: 0 0 10px 0;
+  margin: 0 0 15px 0;
   padding-bottom: 10px;
   border-bottom: 1px dashed #ccc;
   font-size: 1.1em;
@@ -265,15 +474,10 @@ button[type="submit"] { padding: 12px 25px; font-size: 1.1em; margin-top: 25px; 
 .custom-lookup-container > .property-field {
   display: contents; /* Make label/div grid items */
 }
-.custom-lookup-container > .property-field > label {
-  grid-column: 1;
-  padding-top: 8px;
-}
-.custom-lookup-container > .property-field > div {
-  grid-column: 2;
-}
+.custom-lookup-container > .property-field > label { grid-column: 1; padding-top: 8px; }
+.custom-lookup-container > .property-field > div { grid-column: 2; }
 
-/* Styling for the Columns Section */
+/* Styling for the Columns Section within Lookup */
 .columns-section {
   grid-column: 1 / -1; /* Span full width */
   margin-top: 20px;
@@ -281,7 +485,7 @@ button[type="submit"] { padding: 12px 25px; font-size: 1.1em; margin-top: 25px; 
   border-top: 1px dashed #ccc;
 }
 .columns-section > label { /* The "Columns:" label */
-  grid-column: 1 / -1;
+  grid-column: 1 / -1; /* Needs to be set explicitly as parent isn't 'contents' */
   font-weight: bold;
   margin-bottom: 10px;
 }
@@ -295,174 +499,255 @@ button[type="submit"] { padding: 12px 25px; font-size: 1.1em; margin-top: 25px; 
   gap: 15px; /* Space between column rows */
 }
 
+/* Individual Column Row */
 .column-row {
-  /* Reuse field-row flex styles for internal layout */
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px 15px; /* Gap between fields */
-  align-items: baseline; /* Align baselines */
+  display: grid; /* Grid layout for fields within the column */
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Responsive columns */
+  gap: 10px 15px;
+  align-items: end; /* Align items to bottom for better button placement */
   padding: 15px;
-  background: #f1f1f1;
-  border: 1px solid #ddd;
+  background: #f1f4f6;
+  border: 1px solid #d8dde2;
   border-radius: 4px;
+  position: relative; /* For remove button */
 }
 
 /* Fields *inside* the column-row */
 .column-row > .property-field {
-  /* Use grid for label/input alignment */
-  display: grid;
-  grid-template-columns: minmax(80px, auto) 1fr; /* Smaller label column */
-  gap: 5px 8px; /* Internal gap */
-  align-items: baseline;
-  flex: 1 1 calc(33% - 15px); /* Aim for three columns, adjust calc based on gap */
-  min-width: 150px;
+  display: flex; /* Use flex for simple label-above-input */
+  flex-direction: column;
+  gap: 4px; /* Space between label and input */
 }
-.column-row > .property-field.checkbox-field {
-   flex-grow: 0; /* Don't let checkboxes grow too much */
-   min-width: 100px;
-   grid-template-columns: auto; /* Override grid for checkbox */
-}
-.column-row > .property-field.checkbox-field > label {
-  grid-column: 1; /* Reset grid column */
-  display: flex; align-items: center; font-weight: normal; padding-top: 0;
-}
-.column-row > .property-field.checkbox-field input[type="checkbox"] {
-   width: auto; margin-right: 5px;
-}
-.column-row > .property-field.checkbox-field > div { display: none; } /* Hide empty div */
-
 .column-row > .property-field > label {
- grid-column: 1;
- padding-top: 8px;
+ padding-top: 0;
  font-weight: normal; /* Lighter weight for sub-fields */
 }
 .column-row > .property-field > div {
- grid-column: 2;
- display: flex; flex-direction: column;
+  /* The div is not strictly needed with flex-direction column, but keep for consistency */
 }
 
+/* Checkbox layout within column row */
+.column-row > .property-field.checkbox-field {
+   flex-direction: row; /* Align checkbox and label horizontally */
+   align-items: center;
+   padding-top: 18px; /* Align with bottom of other inputs */
+}
+.column-row > .property-field.checkbox-field label {
+   padding-top: 0;
+   margin-bottom: 0;
+}
+.column-row > .property-field.checkbox-field input[type="checkbox"] {
+    order: -1; /* Put checkbox before label */
+    margin-right: 6px;
+}
+
+
+/* Remove column button */
 .column-row > button.remove-column {
-  margin-left: auto; /* Push button right */
+  grid-column: -1; /* Position in the last grid track if possible */
+  justify-self: end; /* Align to the end of its track */
   align-self: center; /* Vertically center */
-  flex-basis: auto; /* Let it size itself */
-  background-color: #dc3545; /* Consistent remove color */
-  padding: 4px 8px; font-size: 0.8em;
-}
-.column-row > button.remove-column:hover { background-color: #c82333; }
-
-/* Adjust breakpoints if needed */
-@media (max-width: 900px) {
-  .custom-lookup-container {
-      grid-template-columns: 1fr; /* Stack label/input */
-  }
-   .custom-lookup-container > .property-field > label,
-   .custom-lookup-container > .property-field > div {
-      grid-column: 1;
-   }
-   .custom-lookup-container > .property-field > label { margin-bottom: 3px; padding-top: 0; }
-
-  .column-row { flex-direction: column; align-items: stretch; } /* Stack fields within column row */
-  .column-row > .property-field { min-width: 100%; }
-}
-
-/* Default Value Field placement (should behave like other simple fields) */
-.property-field.default-value-field {
-  /* Uses 'display: contents' set by JS */
-}
-
-.property-field.default-value-field > label {
-  grid-column: 1;
-  padding-top: 8px; /* Align with input padding */
-  /* Other label styles */
-}
-.property-field.default-value-field > div {
-  grid-column: 2;
-  /* Styles for the div containing the control */
-  display: flex; /* Use flex for potential internal alignment */
-  flex-direction: column;
-}
-/* Control width */
-.property-field.default-value-field > div > input,
-.property-field.default-value-field > div > select,
-.property-field.default-value-field > div > textarea {
-  width: 100%;
-}
-
-/* Adjustments for default checkbox (using select) */
-.property-field.default-value-checkbox > label {
-  /* Standard label alignment */
-}
-.property-field.default-value-checkbox > div > select {
-  /* Standard select styling */
-}
-
-/* --- Responsive Adjustments --- */
-@media (max-width: 900px) { /* Adjust breakpoint for inline labels */
-   /* ... existing responsive rules ... */
-
-   /* Ensure default value fields stack correctly */
-   .property-field.default-value-field { grid-template-columns: 1fr; }
-   .property-field.default-value-field > label,
-   .property-field.default-value-field > div { grid-column: 1; }
-   .property-field.default-value-field > label { margin-bottom: 3px; padding-top: 0; }
+  margin-left: 10px; /* Space from last field */
+  /* Position absolutely as fallback */
+   position: absolute; top: 10px; right: 10px; margin-left: 0;
 }
 
 
-
-/* Attribute Rows - Use Flex */
-#css-attributes-container, #js-attributes-container {
-  margin-top: 10px; padding: 15px; background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px;
+/* --- Responsive Image List Styles --- */
+.responsive-images-list { display: flex; flex-direction: column; gap: 15px; }
+.responsive-image-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px 15px;
+    align-items: end;
+    padding: 15px;
+    background: #f1f4f6;
+    border: 1px solid #d8dde2;
+    border-radius: 4px;
+    position: relative;
 }
-#css-attributes-container h4, #js-attributes-container h4 { margin: 0 0 10px 0; font-size: 1.1em; color: #495057; }
-#css-attributes-list div, #js-attributes-list div {
-  display: flex; gap: 10px; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px dashed #eee;
+.responsive-image-row > .property-field { display: flex; flex-direction: column; gap: 4px; }
+.responsive-image-row > .property-field > label { padding-top: 0; font-weight: normal; }
+.responsive-image-row > button.remove-responsive-image { position: absolute; top: 10px; right: 10px; }
+
+/* --- Defaults Section Styling --- */
+#defaults-accordion-body {
+    /* Uses the standard accordion-body grid */
 }
-#css-attributes-list div:last-child, #js-attributes-list div:last-child { border-bottom: none; margin-bottom: 0;}
-#css-attributes-list label, #js-attributes-list label { flex: 1; margin-bottom: 0; font-weight: normal; padding-top: 0; }
-#css-attributes-list label:nth-of-type(2), #js-attributes-list label:nth-of-type(2) { flex: 2; }
-#css-attributes-list input, #js-attributes-list input { margin: 0; }
-#css-attributes-list button, #js-attributes-list button { flex: 0 0 auto; margin-top: 0; }
+#defaults-container > p,
+#defaults-container > em {
+    grid-column: 1 / -1;
+    color: #555;
+    margin-bottom: 15px;
+    font-size: 0.95em;
+    line-height: 1.4;
+}
+#defaults-container > h4 { /* Advanced Defaults heading */
+    grid-column: 1 / -1;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #ccc;
+    margin-bottom: 10px;
+}
+/* Container for a single default property's inputs */
+.default-entry-wrapper {
+    display: contents; /* Inherit grid layout */
+}
+/* Styling for nested group defaults */
+.default-group-container {
+    display: contents;
+    grid-column: 1 / -1;
+}
+.default-group-container > h5 { /* Heading for group defaults */
+    grid-column: 1 / -1;
+    margin-top: 15px;
+    margin-bottom: 5px;
+    border-top: 1px dashed #ccc;
+    padding-top: 15px;
+    font-weight: bold;
+}
+/* Container for text setting defaults within a property */
+.text-settings-defaults-group {
+    grid-column: 1 / -1;
+    padding-left: 20px; /* Indent */
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dotted #ccc;
+    /* Use grid layout for the nested settings */
+    display: grid;
+    grid-template-columns: minmax(120px, auto) 1fr; /* Adjust label width */
+    gap: 8px 10px;
+    align-items: baseline;
+}
+.text-settings-defaults-group > label:first-of-type { /* Heading "Text Settings Defaults:" */
+    font-weight: bold;
+    font-style: italic;
+    margin-bottom: 5px;
+    grid-column: 1 / -1; /* Span full width */
+}
+/* Default entry fields follow standard .property-field grid rules via 'display: contents' */
 
 
-/* JSON Preview */
-#preview-container h2 { margin: 0 0 15px 0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+/* --- Attribute Rows (CSS/JS) --- */
+.attributes-section {
+    margin-top: 15px; padding: 15px 20px; background: #f8f9fa;
+    border: 1px solid #dee2e6; border-radius: 5px;
+    grid-column: 1 / -1; /* Span full width */
+}
+.attributes-section h4 { margin: 0 0 10px 0; font-size: 1.1em; color: #495057; }
+.attributes-section > div > div { /* Each attribute row */
+  display: flex; gap: 15px; align-items: center; margin-bottom: 10px;
+  padding-bottom: 10px; border-bottom: 1px dashed #eee;
+}
+.attributes-section > div > div:last-child { border-bottom: none; margin-bottom: 0;}
+.attributes-section label { flex: 1; margin-bottom: 0; font-weight: normal; padding-top: 0; display: flex; align-items: center; gap: 5px; }
+.attributes-section label:nth-of-type(2) { flex: 2; } /* Make value input wider */
+.attributes-section input { margin: 0; }
+.attributes-section button { flex: 0 0 auto; margin-top: 0; } /* Prevent button flexing */
+#add-css-attribute, #add-js-attribute { margin-top: 15px; }
+
+
+/* --- JSON Preview --- */
+#preview-container h2 { margin: 0 0 15px 0; }
 #json-preview {
-  font-family: monospace; font-size: 13px; line-height: 1.6; white-space: pre-wrap;
-  word-wrap: break-word; background: #fff; padding: 15px; border: 1px solid #ccc;
-  border-radius: 5px; overflow-y: auto; color: #333;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  background: #fff;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow-y: auto; /* Scroll if content overflows */
+  color: #333;
+  /* max-height: 600px; */ /* Adjust as needed if not sticky */
 }
 
-/* Filename preview */
-.filename-preview { font-family: monospace; font-size: 0.9em; color: #0056b3; background-color: #e9ecef; padding: 2px 5px; border-radius: 3px; margin-left: 5px; }
+/* Filename preview spans */
+.filename-preview {
+    font-family: monospace;
+    font-size: 0.9em;
+    color: #0056b3;
+    background-color: #e9ecef;
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-left: 5px;
+}
+
+/* Form Message Area */
+#form-message {
+    margin-top: 20px;
+    text-align: center;
+    font-weight: 500;
+    padding: 10px;
+    border-radius: 4px;
+    display: block; /* Ensure it takes space */
+}
+#form-message:empty { display: none; } /* Hide if empty */
+#form-message[style*="color: green"] { background-color: #d4edda; border: 1px solid #c3e6cb;}
+#form-message[style*="color: red"] { background-color: #f8d7da; border: 1px solid #f5c6cb;}
+#form-message[style*="color: #333"] { background-color: #e2e3e5; border: 1px solid #d6d8db;}
 
 /* --- Responsive Adjustments --- */
-@media (max-width: 900px) { /* Adjust breakpoint for inline labels */
+@media (max-width: 1100px) { /* Adjust breakpoint for stacking form/preview */
+    #main-container {
+        flex-direction: column;
+        gap: 25px;
+    }
+    #form-container, #preview-container {
+        min-width: 100%; /* Take full width when stacked */
+    }
+    #preview-container {
+        position: static; /* Remove sticky positioning */
+        max-height: 600px; /* Set max height for scrolling */
+        margin-top: 20px;
+    }
+}
+
+@media (max-width: 768px) { /* Stack grid layouts earlier */
      .accordion-item.active > .accordion-body,
      .field-row > .textsettings-options-container,
-     .field-row > .text-subtype-options-container {
+     .field-row > .text-subtype-options-container,
+     .custom-lookup-container,
+     .text-settings-defaults-group {
         grid-template-columns: 1fr; /* Stack label/input */
         gap: 5px 0;
     }
-     .property-field { grid-template-columns: 1fr; }
      .property-field > label,
-     .property-field > div { grid-column: 1; }
-     .property-field > label { margin-bottom: 3px; padding-top: 0; }
-     .property-field.full-width > label, /* Ensure full width labels still stack */
-     .property-field > label:has(input[type="checkbox"]) {
-         grid-column: 1;
+     .property-field > div,
+     .field-row > .textsettings-options-container > label,
+     .field-row > .textsettings-options-container > div,
+     .field-row > .text-subtype-options-container > label,
+     .field-row > .text-subtype-options-container > div,
+     .custom-lookup-container > .property-field > label,
+     .custom-lookup-container > .property-field > div,
+     .text-settings-defaults-group > label,
+     .text-settings-defaults-group > div {
+         grid-column: 1; /* Ensure items are in the single column */
      }
+     .property-field > label,
+     .field-row > .textsettings-options-container > label,
+     .field-row > .text-subtype-options-container > label,
+     .custom-lookup-container > .property-field > label,
+     .text-settings-defaults-group > label {
+          margin-bottom: 3px; padding-top: 0; /* Adjust spacing for stacked layout */
+      }
 
-     .field-row { flex-direction: column; align-items: stretch; gap: 5px; }
-     .field-row > .property-field > label { flex-basis: auto; margin-right: 0; margin-bottom: 3px;}
-     .field-row > .property-field > div { flex-basis: auto; }
-     .field-row > button.remove-field { margin-left: 0; margin-top: 10px; align-self: flex-start; }
-}
+     /* Field Row adjustments */
+     .field-row { grid-template-columns: 1fr; gap: 15px; } /* Stack fields within field row */
+     .field-row > button.remove-field { position: static; margin-top: 10px; justify-self: start; } /* Static position when stacked */
 
-@media (max-width: 768px) { /* Stack form/preview earlier */
-    #main-container { flex-direction: column; gap: 25px; }
-    #form-container, #preview-container { min-width: 100%; }
-    #preview-container { position: static; max-height: 500px; margin-top: 20px; }
-    #css-attributes-list div, #js-attributes-list div { flex-direction: column; align-items: stretch; gap: 5px; }
-    #css-attributes-list label:nth-of-type(2), #js-attributes-list label:nth-of-type(2) { flex: 1; }
-    #css-attributes-list button, #js-attributes-list button { margin-left: 0; margin-top: 5px; }
+     /* Column Row adjustments */
+     .column-row { grid-template-columns: 1fr; gap: 15px; } /* Stack fields within column row */
+     .column-row > button.remove-column { position: static; margin-top: 10px; justify-self: start; }
+
+     /* Responsive Image Row adjustments */
+     .responsive-image-row { grid-template-columns: 1fr; gap: 15px; }
+     .responsive-image-row > button.remove-responsive-image { position: static; margin-top: 10px; justify-self: start; }
+
+     /* Attribute Rows adjustments */
+     .attributes-section > div > div { flex-direction: column; align-items: stretch; gap: 5px; }
+     .attributes-section label:nth-of-type(2) { flex: 1; }
+     .attributes-section button { margin-left: 0; margin-top: 10px; }
 }
