@@ -3,7 +3,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs-extra');
-// const tar = require('tar'); // Removed - Not used currently
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -51,8 +51,8 @@ app.post('/generate', async (req, res) => {
    if (!/^\d+\.\d+\.\d+$/.test(version)) {
      return res.status(400).json({ error: 'Invalid JSON data. Version must be in semantic format (e.g., 1.0.0).' });
   }
-  if (!Array.isArray(styles) || !Array.isArray(scripts) || !Array.isArray(flexJson.properties)) {
-      return res.status(400).json({ error: 'Invalid JSON data. styles, scripts, and properties must be arrays.'});
+  if (!Array.isArray(flexJson.properties)) {
+      return res.status(400).json({ error: 'Invalid JSON data. You must include properties in the Flex.json.'});
   }
 
 

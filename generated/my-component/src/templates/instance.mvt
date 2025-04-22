@@ -1,0 +1,5 @@
+<!-- Component: My Component (my-component) -->
+<div class="my-component">
+	<!-- Instance template for my-component -->
+	Component content goes here.
+</div>

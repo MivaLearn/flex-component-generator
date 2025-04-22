@@ -6,6 +6,16 @@ import {BASE_TYPE_FIELDS, getFieldsForTextSubType} from "./config.js";
 // Import utility functions like debounce.
 import {debounce} from "./utils.js";
 
+
+// --- Helper Function to Create Error Span ---
+function createErrorElement(idSuffix) {
+    const errorSpan = document.createElement('span');
+    errorSpan.classList.add('error-message');
+    // Optional: Link via aria-describedby if input has a predictable ID
+    // errorSpan.id = `error-${idSuffix}`;
+    return errorSpan;
+}
+
 // --- Rendering Helper Functions ---
 // These functions generate specific parts of the UI dynamically based on user selections.
 
@@ -34,15 +44,15 @@ function addColumnRow(columnsListContainer, lookupPathPrefix) {
 	// Set the inner HTML for the column configuration fields.
 	columnRow.innerHTML = `
         <div class="property-field" title="Unique identifier for this column within the lookup definition (lowercase, numbers, underscores).">
-            <label>Code:</label>
+            <label class="required">Code:</label>
             <div><input type="text" name="${columnBasePath}[code]" required pattern="[a-z0-9_]+"></div>
         </div>
         <div class="property-field" title="Header text displayed for this column in the lookup modal table.">
-            <label>Header:</label>
+            <label class="required">Header:</label>
             <div><input type="text" name="${columnBasePath}[header]" required></div>
         </div>
         <div class="property-field" title="Data type used for rendering and sorting the column in the modal.">
-            <label>Type:</label>
+            <label class="required">Type:</label>
             <div><select name="${columnBasePath}[type]">${typeOptions}</select></div>
         </div>
         <div class="property-field checkbox-field" title="Allow users to sort the modal data by this column?">
@@ -88,23 +98,23 @@ function renderCustomLookupField(container, propertyPathPrefix) {
 	lookupContainer.innerHTML = `
         <h4>Custom Lookup Configuration</h4>
         <div class="property-field" title="Miva module code (e.g., 'UTIL') containing the function that provides lookup data.">
-            <label>Module Code:</label>
+            <label class="required">Module Code:</label>
             <div><input type="text" name="${lookupPathPrefix}[module_code]" required></div>
         </div>
         <div class="property-field" title="Function within the specified module to call. This function should return the lookup data in the expected format.">
-            <label>Module Function:</label>
+            <label class="required">Module Function:</label>
             <div><input type="text" name="${lookupPathPrefix}[module_function]" required></div>
         </div>
         <div class="property-field" title="Optional title displayed at the top of the lookup modal window. Defaults to the property's prompt if left empty.">
-            <label>Modal Title:</label>
+            <label class="required">Modal Title:</label>
             <div><input type="text" name="${lookupPathPrefix}[title]"></div>
         </div>
         <div class="property-field" title="The 'Code' of the column whose value should be saved when the user makes a selection in the modal. Must match one of the defined column codes below.">
-            <label>Selection Column:</label>
+            <label class="required">Selection Column:</label>
             <div><input type="text" name="${lookupPathPrefix}[selection_column]" required pattern="[a-z0-9_]+"></div>
         </div>
         <div class="property-field" title="Optional 'Code' of the column to sort the data by initially when the modal opens.">
-            <label>Default Sort Column:</label>
+            <label class="required">Default Sort Column:</label>
             <div><input type="text" name="${lookupPathPrefix}[default_sort]" pattern="[a-z0-9_]+"></div>
         </div>
         <div class="property-field full-width columns-section" style="margin-top: 20px;">
@@ -154,6 +164,10 @@ function renderOptionsField(container, propertyPathPrefix, fieldIndex = null, ba
 	// Create container elements.
 	const optionsContainer = document.createElement("div");
 	optionsContainer.classList.add("options-container");
+    // Add an error span for the options list itself (e.g., if none are added)
+    const listErrorSpan = createErrorElement(`options-list-${baseName.replace(/\[|\]/g, '-')}`);
+    optionsContainer.appendChild(listErrorSpan);
+
 	const addOptionButton = document.createElement("button");
 	addOptionButton.type = "button";
 	addOptionButton.textContent = "Add Option";
@@ -175,8 +189,8 @@ function renderOptionsField(container, propertyPathPrefix, fieldIndex = null, ba
 		optionRow.classList.add("option-row");
 		// Set inner HTML with text input, value input, and remove button.
 		optionRow.innerHTML = `
-            <label>Text: <input type="text" name="${baseName}[${optionIndex}][text]" required></label>
-            <label>Value: <input type="text" name="${baseName}[${optionIndex}][value]" required></label>
+            <label class="required">Text: <input type="text" name="${baseName}[${optionIndex}][text]" required></label>
+            <label class="required">Value: <input type="text" name="${baseName}[${optionIndex}][value]" required></label>
             <button type="button" class="remove-option">Remove</button>
         `;
 		// Insert the new row before the 'Add Option' button.
@@ -200,6 +214,9 @@ function renderOptionsField(container, propertyPathPrefix, fieldIndex = null, ba
 			dispatchUpdate(); // Signal update on input change.
 		}
 	});
+
+    // Add at least one option row initially to avoid immediate validation errors
+    addOptionButton.click();
 }
 
 /**
@@ -493,15 +510,15 @@ function addTextSettingFieldRow(fieldsContainer, propertyPathPrefix) {
 	// Set the inner HTML for the field configuration inputs.
 	fieldRow.innerHTML = `
         <div class="property-field" title="Unique identifier for this setting within the textsettings block (lowercase, numbers, underscores).">
-            <label>Code:</label>
+            <label class="required">Code:</label>
             <div><input type="text" name="${baseName}[code]" required pattern="[a-z0-9_]+"></div>
         </div>
         <div class="property-field" title="Label shown for this setting in the Miva admin UI.">
-            <label>Prompt:</label>
+            <label class="required">Prompt:</label>
             <div><input type="text" name="${baseName}[prompt]" required></div>
         </div>
         <div class="property-field" title="Data type of the setting (e.g., text, number, checkbox). Determines the input control shown.">
-            <label>Type:</label>
+            <label class="required">Type:</label>
             <div><select name="${baseName}[type]">${allowedSubTypes.map((type) => `<option value="${type}">${type}</option>`).join("")}</select></div>
         </div>
         <div class="property-field" title="Optional CSS property this setting controls (e.g., font-size, color, margin-left). If set, the value entered by the user will be applied to this CSS property.">
@@ -790,17 +807,17 @@ function addPropertyRow(targetContainer, propertyPathPrefix) {
         <button class="accordion-header property-header" type="button">${propertyLabel} ${currentIndex}: (Type: text)</button>
         <div class="accordion-body">
             <div class="property-field" title="Select the data type for this property (e.g., Text, Image, Group). This determines the available configuration options and how the data is handled.">
-                <label>Type:</label>
+                <label class="required">Type:</label>
                 <div><select name="${currentPropertyPath}[type]">${Object.keys(TYPE_FIELDS)
 					.map((type) => `<option value="${type}">${type}</option>`)
 					.join("")}</select></div>
             </div>
              <div class="property-field" title="Unique identifier for this property (lowercase, numbers, underscores). Used to access the property's value in templates (e.g., component:properties:my_code).">
-                 <label>Code:</label>
+                 <label class="required">Code:</label>
                  <div><input type="text" name="${currentPropertyPath}[code]" required pattern="[a-z0-9_]+"></div>
              </div>
             <div class="property-field" title="Label displayed for this property in the Miva admin Page Builder interface.">
-                <label>Prompt:</label>
+                <label id="prompt-label-${currentIndex}">Prompt:</label>
                 <div><input type="text" name="${currentPropertyPath}[prompt]" required></div>
             </div>
             <!-- Container where type-specific fields will be rendered -->
@@ -819,7 +836,8 @@ function addPropertyRow(targetContainer, propertyPathPrefix) {
 	propertyRow.classList.add("active");
 
 	// --- Get References to Elements within the new Row ---
-	const propertyTypeSelect = propertyRow.querySelector(`select[name$="[type]"]`);
+    const propertyTypeSelect = propertyRow.querySelector(`select[name$="[type]"]`);
+    const propertyPromptLabel = propertyRow.querySelector(`#prompt-label-${currentIndex}`); // Get prompt label
 	const propertyOptionsContainer = propertyRow.querySelector(".property-options");
 	const propertyHeader = propertyRow.querySelector(".property-header");
 	const propertyCodeInput = propertyRow.querySelector(`input[name$="[code]"]`);
@@ -841,10 +859,21 @@ function addPropertyRow(targetContainer, propertyPathPrefix) {
 	// --- Dynamic Options Rendering on Type Change ---
 	propertyTypeSelect.addEventListener("change", () => {
 		const selectedType = propertyTypeSelect.value;
+        // Prompt is NOT strictly required for Group type in flex.json structure
+        if (selectedType === 'group') {
+            propertyPromptLabel.classList.remove('required');
+            propertyPromptInput.required = false;
+        } else {
+            propertyPromptLabel.classList.add('required');
+            propertyPromptInput.required = true;
+        }
 		// Get the field definitions for the newly selected type from the processed TYPE_FIELDS.
 		const fields = TYPE_FIELDS[selectedType] || [];
 
 		// --- Clear Previous Options ---
+        const propertyOptionsContainer = propertyRow.querySelector(".property-options");
+        const childPropertiesContainer = propertyRow.querySelector(".child-properties-container");
+		        
 		// Remove all previously rendered type-specific options, but keep the static containers.
 		Array.from(propertyOptionsContainer.children).forEach((el) => {
 			if (!el.classList.contains("text-subtype-options-container-main") && !el.classList.contains("child-properties-container")) {
@@ -857,7 +886,7 @@ function addPropertyRow(targetContainer, propertyPathPrefix) {
 			mainSubtypeContainer.innerHTML = "";
 			mainSubtypeContainer.style.display = "none";
 		}
-		childPropertiesContainer.innerHTML = "";
+		childPropertiesContainer.innerHTML = createErrorElement(`prop-${currentIndex}-children`).outerHTML; // Reset error span
 		childPropertiesContainer.style.display = "none";
 
 		// --- Prepare Fragments for Efficient DOM Insertion ---
@@ -891,6 +920,11 @@ function addPropertyRow(targetContainer, propertyPathPrefix) {
 			const controlContainer = document.createElement("div");
 			let controlElement = null;
 			let isComplex = false; // Flag for fields needing full width or custom rendering.
+            
+            // Check if config marks the *attribute* as required
+            if (fieldDef.required) { 
+                labelElement.classList.add('required');
+            }
 
 			// --- Render Control Based on Field Type ---
 			if (fieldType === "boolean") {
@@ -1070,11 +1104,11 @@ function addDependencyRow(dependenciesListContainer) {
 	// Set the inner HTML for the dependency fields.
 	dependencyRow.innerHTML = `
         <div class="property-field" title="Enter the unique 'code' of the component this component depends on (e.g., 'mmx-base', 'my-shared-library').">
-            <label>Component Code:</label>
+            <label class="required">Component Code:</label>
             <div><input type="text" name="${dependencyBasePath}[code]" required pattern="[a-z0-9\\-]+"></div>
         </div>
         <div class="property-field" title="Enter the required version string. Examples: '1.0.0' (exact), '>=10.7.0' (greater or equal). See Miva docs for full syntax.">
-            <label>Required Version:</label>
+            <label class="required">Required Version:</label>
             <div><input type="text" name="${dependencyBasePath}[version]" required placeholder="e.g., >=1.0.0"></div>
         </div>
         <button type="button" class="remove-dependency" title="Remove this dependency">Remove Dependency</button>
@@ -1113,19 +1147,19 @@ export function buildFormUI() {
         <button class="accordion-header" type="button">Component Details</button>
         <div class="accordion-body">
           <div class="property-field" title="User-friendly name displayed in the Page Builder component list.">
-              <label>Component Name:</label>
+              <label class="required">Component Name:</label>
               <div><input type="text" name="component_name" value="My Component" required></div>
           </div>
           <div class="property-field" title="Unique machine-readable code for the component (lowercase letters, numbers, hyphens only). Used for filenames and internal references.">
-              <label>Component Code:</label>
+              <label class="required">Component Code:</label>
               <div><input type="text" name="component_code" value="my-component" required pattern="[a-z0-9\\-]+"></div>
           </div>
           <div class="property-field" title="Version number for the component (e.g., 1.0.0). Follows semantic versioning.">
-              <label>Version:</label>
+              <label class="required">Version:</label>
               <div><input type="text" name="version" value="1.0.0" required pattern="\\d+\\.\\d+\\.\\d+"></div>
           </div>
           <div class="property-field" title="Type of the component (usually 'component', 'library' is less common). Affects how it's treated by Miva.">
-              <label>Component Type:</label>
+              <label class="required">Component Type:</label>
               <div><select name="type"><option value="component" selected>Component</option><option value="library">Library</option></select></div>
           </div>
           <div class="property-field" title="Optional category for organizing components in the Page Builder interface.">
@@ -1133,7 +1167,7 @@ export function buildFormUI() {
               <div><select name="category"><option value="">-- Select Category --</option><option value="banner">Banner</option><option value="carousel">Carousel</option><option value="text">Text</option><option value="product">Product</option><option value="image">Image</option><option value="video">Video</option><option value="feature">Feature</option><option value="utility">Utility</option><option value="layout">Layout</option><option value="navigation">Navigation</option><option value="form">Form</option><option value="social">Social</option><option value="other">Other</option></select></div>
           </div>
           <div class="property-field" title="Code for the Global Resource Group this component's CSS/JS files belong to. Often matches the Component Code, but can be shared.">
-              <label>Global Resource Code:</label>
+              <label class="required">Global Resource Code:</label>
               <div><input type="text" name="resourcegroup_code" value="my-component" required></div>
           </div>
           <!-- CSS Inclusion -->
@@ -1153,6 +1187,9 @@ export function buildFormUI() {
               <h4>JS Script Attributes</h4>
               <div id="js-attributes-list"></div>
               <button type="button" id="add-js-attribute">Add JS Attribute</button>
+          </div>
+          <div class="property-field full-width checkbox-field" style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;" title="Check to mark component as managed.">
+              <label><input type="checkbox" name="managed" value="true"> Managed Component</label>
           </div>
         </div>
       </div>
@@ -1249,8 +1286,6 @@ export function buildFormUI() {
 	addDependencyButton.addEventListener("click", () => {
 		addDependencyRow(dependenciesListContainer);
 	});
-	// Optional: Add one initial dependency row if desired
-	addDependencyRow(dependenciesListContainer);
 
 	// Show/hide attribute sections based on checkbox state.
 	includeCSSCheckbox.addEventListener("change", () => {
@@ -1263,8 +1298,8 @@ export function buildFormUI() {
 	addCSSAttributeButton.addEventListener("click", () => addAttributeRow(cssAttributesList, "css_attribute"));
 	addJSAttributeButton.addEventListener("click", () => addAttributeRow(jsAttributesList, "js_attribute"));
 	// Add initial attribute rows
-	addAttributeRow(cssAttributesList, "css_attribute");
-	addAttributeRow(jsAttributesList, "js_attribute");
+	//addAttributeRow(cssAttributesList, "css_attribute");
+	//addAttributeRow(jsAttributesList, "js_attribute");
 
 	/**
 	 * Creates the appropriate HTML input element for setting a default value for a given property type.

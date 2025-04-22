@@ -711,6 +711,7 @@ export function setupPreview() {
         // Define standard template paths (assuming a fixed structure).
         raw.initialization_template = `src/templates/init.mvt`;
         raw.instance_template = `src/templates/instance.mvt`;
+        raw.managed = formData.managed === 'true'; // Check if the value is exactly the string 'true'
 
         // --- Process Dependencies ---
         if (formData.depends && Array.isArray(formData.depends) && formData.depends.length > 0) {

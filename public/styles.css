@@ -837,3 +837,75 @@ button[type="submit"] {
       height: auto; /* Reset height */
   }
 }
+/* styles.css */
+
+/* ... (keep all existing styles) ... */
+
+/* --- Validation Styles --- */
+input.input-error,
+select.input-error,
+textarea.input-error {
+  border-color: #dc3545 !important; /* Red border for invalid fields */
+  background-color: #fff3f3; /* Slight red background */
+}
+input.input-error:focus,
+select.input-error:focus,
+textarea.input-error:focus {
+   box-shadow: 0 0 0 2px rgba(220, 53, 69, 0.25); /* Red focus shadow */
+}
+
+/* Style for inline error messages */
+.error-message {
+  display: none; /* Hidden by default */
+  color: #dc3545;
+  font-size: 0.85em;
+  margin-top: 4px;
+  /* If using grid layout where control is in column 2 */
+  grid-column: 2; /* Align with input field */
+  /* Or if label/input are stacked */
+  /* width: 100%; */
+}
+/* Use adjacent sibling selector (+) if error span is immediately after the input's container div */
+/* .property-field > div + .error-message {
+   grid-column: 2; Align with input
+} */
+/* Use general sibling selector (~) if it might not be immediately adjacent */
+/* .property-field > div ~ .error-message {
+     grid-column: 2;
+} */
+
+
+.error-message.visible {
+  display: block; /* Show the error message */
+}
+
+/* Style for error message within specific contexts */
+.field-row .error-message {
+  /* Adjust grid column if needed based on field-row layout */
+   grid-column: 2; /* Assume it follows the input div */
+   /* Or if fields stack: */
+   /* grid-column: 1; width: 100%; */
+}
+.column-row .error-message,
+.responsive-image-row .error-message,
+.dependency-row .error-message {
+    /* Fields are often label+input flex column */
+    /* Place error below input */
+     width: 100%;
+     text-align: left;
+     margin-left: 0;
+}
+.option-row .error-message {
+    /* Options are flex row, maybe place error below the row? */
+    flex-basis: 100%; /* Take full width */
+    margin-top: 2px;
+    text-align: center; /* Or align with the inputs */
+}
+
+/* Ensure required indicator is visible */
+label.required::after {
+    content: " *";
+    color: #dc3545;
+    font-weight: bold;
+    margin-left: 2px;
+}

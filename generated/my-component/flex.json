@@ -1,0 +1,29 @@
+{
+  "code": "my-component",
+  "name": "My Component",
+  "version": "1.0.0",
+  "type": "component",
+  "resourcegroup_code": "my-component",
+  "initialization_template": "src/templates/init.mvt",
+  "instance_template": "src/templates/instance.mvt",
+  "managed": "false",
+  "styles": [
+    {
+      "filepath": "src/css/my-component.css",
+      "resource_code": "my-component"
+    }
+  ],
+  "scripts": [
+    {
+      "filepath": "src/js/my-component.js",
+      "resource_code": "my-component"
+    }
+  ],
+  "properties": [
+    {
+      "code": "gr",
+      "type": "group",
+      "prompt": "gr"
+    }
+  ]
+}

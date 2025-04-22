@@ -26,8 +26,12 @@
         - `action` and `method` attributes are removed as submission is handled via JavaScript (Fetch API).
         - `novalidate` can be added to disable default browser validation if using custom JS validation.
       -->
+      <!--
+        Div for displaying status messages during form submission (e.g., "Generating...", "Success!", "Error...").
+        Styled via CSS. Content set by main.js.
+      -->
+      <div id="form-message"></div>
       <form id="component-form">
-
         <!--
           This div will be populated by renderer.js with the accordion structure
           (Component Details, Properties, Advanced Properties, Defaults).
@@ -40,11 +44,6 @@
         <!-- Submission Button -->
         <button type="submit">Generate Component Files</button>
 
-        <!--
-          Div for displaying status messages during form submission (e.g., "Generating...", "Success!", "Error...").
-          Styled via CSS. Content set by main.js.
-        -->
-        <div id="form-message"></div>
       </form>
     </div> <!-- End Form Container -->
 
