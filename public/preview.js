@@ -712,6 +712,26 @@ export function setupPreview() {
         raw.initialization_template = `src/templates/init.mvt`;
         raw.instance_template = `src/templates/instance.mvt`;
 
+        // --- Process Dependencies ---
+        if (formData.depends && Array.isArray(formData.depends) && formData.depends.length > 0) {
+            const dependsObject = {};
+            formData.depends.forEach(dep => {
+                // Validate each dependency entry from the form data
+                if (dep && typeof dep === 'object' && dep.code?.trim() && dep.version?.trim()) {
+                    const depCode = dep.code.trim();
+                    const depVersion = dep.version.trim();
+                    // Add to the object, using code as key and version as value
+                    dependsObject[depCode] = depVersion;
+                }
+            });
+
+            // Add the depends object to the raw output only if it's not empty
+            if (Object.keys(dependsObject).length > 0) {
+                raw.depends = dependsObject;
+                console.log(dependsObject);
+            }
+        }
+
         // 4. --- Process Styles & Scripts ---
         raw.styles = [];
         // If the 'include_css' checkbox is checked...
@@ -826,7 +846,7 @@ export function setupPreview() {
     // Use event delegation for removal buttons to trigger updates immediately after removal.
     form.addEventListener('click', (event) => {
         // Check if the clicked element or its ancestor is one of the removal buttons.
-        if (event.target.closest('.remove-property, .remove-option, .remove-field, .remove-attribute, .remove-responsive-image, .remove-column')) {
+        if (event.target.closest('.remove-property, .remove-option, .remove-field, .remove-attribute, .remove-responsive-image, .remove-column, .remove-condition, .remove-dependency')) {
             // Use setTimeout to allow the DOM removal to complete before updating the preview.
             setTimeout(updatePreviewInternal, 50);
         }
@@ -836,9 +856,7 @@ export function setupPreview() {
     // This ensures the Defaults section and preview update correctly when properties are added/removed/modified.
     form.addEventListener('property-updated', updatePreviewInternal);
     form.addEventListener('property-removed', updatePreviewInternal);
-    // Future potential custom events (if needed for more granular updates):
-    // form.addEventListener('options-updated', updatePreviewInternal);
-    // form.addEventListener('responsive-images-updated', updatePreviewInternal);
+    form.addEventListener('dependencies-updated', updatePreviewInternal);
 
     // Initial call to generate the preview when the page loads.
     updatePreviewInternal();
