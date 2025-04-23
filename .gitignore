@@ -1,1 +1,6 @@
 node_modules/
+# ignore all files in `generated/`
+generated/*
+
+# but do NOT ignore the placeholder .gitkeep
+!generated/.gitkeep
